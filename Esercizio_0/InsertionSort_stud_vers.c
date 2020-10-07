@@ -208,8 +208,10 @@ int main(int argc, char *argv[]) {
             if (!isSorted(randomArray, dim)) isSortedIS = false;
         }
         // Printing the (sample mean as) result. Use TAB on file
-        if (outputType == ONCONSOLE) fprintf(outputPointer, "| %9d | %17f | %9s |\n", dim, (double) timeIS/numExperiments, isSortedIS ? "true" : "false");
-            else fprintf(outputPointer, "%9d\t%17f\t%9s\n", dim, (double) timeIS/numExperiments, isSortedIS ? "true" : "false");
+        if (outputType == ONCONSOLE) 
+            fprintf(outputPointer, "| %9d | %17f | %9s |\n", dim, (double) timeIS/numExperiments, isSortedIS ? "true" : "false");
+        else 
+            fprintf(outputPointer, "%9d\t%17f\t%9s\n", dim, (double) timeIS/numExperiments, isSortedIS ? "true" : "false");
     }
 
     // Print the ending part, only if it is on console

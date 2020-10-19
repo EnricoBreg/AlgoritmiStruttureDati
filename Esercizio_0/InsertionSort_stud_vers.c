@@ -211,7 +211,8 @@ int main(int argc, char *argv[]) {
         if (outputType == ONCONSOLE) 
             fprintf(outputPointer, "| %9d | %17f | %9s |\n", dim, (double) timeIS/numExperiments, isSortedIS ? "true" : "false");
         else 
-            fprintf(outputPointer, "%9d\t%17f\t%9s\n", dim, (double) timeIS/numExperiments, isSortedIS ? "true" : "false");
+            // PRINT ONFILE
+            fprintf(outputPointer, "%d\t%d\t%s\n", dim, (int) timeIS/numExperiments, isSorted ? "true" : "false");
     }
 
     // Print the ending part, only if it is on console

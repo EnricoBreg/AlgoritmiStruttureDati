@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-#define DIM 8
+#define DIM 1000
 #define SEED 18
-#define MAXRAND 100
+#define MAXRAND 10000
 // se definito RANDOM il programma genera un array di dimensione DIM con elementi casuali compresi tra 1 e MAXRAND
 #define RANDOM
 
 void merge(int *a, int left, int center, int right);
 void mergeSort(int *a, int left, int right);
 void stampaArray(int a[]);
-
+bool isSorted(int a[]);
 
 /* MAIN FUNCTION
  * Prova implementazione C dell'algoritmo di ordinamento MergeSort
@@ -23,18 +24,22 @@ int main(int argc, char *argv[])
     int *a;
     a = (int*)malloc(sizeof(int) * DIM);
     // Inizializzazione dell'array con numero pseudo-casuali
-    for(i = 0; i < DIM; i++) {
+    for(i = 0; i < DIM; i++) 
+    {
         a[i] = 1 + rand() % MAXRAND;
     }
     #else
     int a[] = {10, 3, 15, 2, 1, 4, 9, 0};
     #endif
     
-    stampaArray(a);
+    //stampaArray(a);
 
     mergeSort(a, 0, DIM-1);
 
-    stampaArray(a);
+    //stampaArray(a);
+
+    bool issorted = isSorted(a);
+    fprintf(stdout, "\nisSorted?\n%s\n", issorted ? "Yes" : "No");
 
     #ifdef RANDOM
     // deallocazione della memoria riservata all'array A
@@ -106,7 +111,24 @@ void merge(int *a, int left, int center, int right)
     return;
 }
 
+bool isSorted(int a[]) {
+    int i;
+    bool returnValue = false;
 
+    for(i = 0; i < DIM-1; i++)
+    {
+        if(a[i] <= a[i+1])
+        {
+            returnValue = true;
+        }
+        else
+        {
+            returnValue = false;
+        }
+    }
+
+    return returnValue;
+}
 
 void stampaArray(int a[]) 
 {

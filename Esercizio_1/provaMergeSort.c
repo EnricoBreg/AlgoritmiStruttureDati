@@ -113,21 +113,18 @@ void merge(int *a, int left, int center, int right)
 
 bool isSorted(int a[]) {
     int i;
-    bool returnValue = false;
 
     for(i = 0; i < DIM-1; i++)
     {
-        if(a[i] <= a[i+1])
+        if(a[i] > a[i+1])
         {
-            returnValue = true;
+            return false;
         }
         else
         {
-            returnValue = false;
+            return true;
         }
     }
-
-    return returnValue;
 }
 
 void stampaArray(int a[]) 

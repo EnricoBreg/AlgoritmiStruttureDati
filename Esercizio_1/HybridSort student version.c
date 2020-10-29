@@ -2,6 +2,7 @@
  * @brief Problem 1, Laboratory of Algorithms and Data Structures.
  * @author SCIAVICCO Guido (guido.sciavicco@unife.it)
  * @author STAN Ionel Eduard (ioneleduard.stan@unife.it)
+ * @author BREGOLI Enrico (enrico.bregoli@edu.unife.it)
  * @version Student
  */
 
@@ -45,15 +46,15 @@ typedef struct {
 // IMPORTANT: these constants are only for didactic purposes: you must find the correct values!
 
 // Seed (important for reproducibility).
-time_t SEED = 20;
+time_t SEED = 18;
 // Minimum size of the array.
-const int minSize = 10;
+const int minSize = 100;
 // Maximum size of the array.
-const int maxSize = 500;
+const int maxSize = 10000;
 // Number of experiments.
-const int numExperiments = 100;
+const int numExperiments = 50;
 // Granularity of the experiment.
-const int granularity = 10;
+const int granularity = 50;
 // Maximum random integer allowed when generating random numbers.
 const int maxRandInt = 1000000;
 // Thereshold parameter for the base case of HybridSort.            IMPORTANT: this is the result of the first part of the experiment!
@@ -135,26 +136,6 @@ void insertionSort(int* A, int low, int high) {
     return;
 }
 
-
-/**
- * @brief MergeSort algorithm.
- * @param A Array of random numbers to be sorted.
- * @param low Left-end index of the array.
- * @param high Right-end index of the array.
- * @property It takes O(n*logn), where n=high-low+1 is the size of the input array.
- */
-void mergeSort(int A[], int low, int high) 
-{
-    int mid;
-    if(low < high) {
-        mid = (low + high) / 2;
-        mergeSort(A, low, mid);
-        mergeSort(A, mid+1, high);
-        merge(A, low, mid, high);
-    }
-    return;
-}
-
 /**
  * @brief Merge algorithm.
  * @param A Array to be merged.
@@ -209,6 +190,25 @@ void merge(int *A, int low, int mid, int high)
 
     // deallocazione della memoria allocata nella heap per l'array b
     free(B);
+    return;
+}
+
+/**
+ * @brief MergeSort algorithm.
+ * @param A Array of random numbers to be sorted.
+ * @param low Left-end index of the array.
+ * @param high Right-end index of the array.
+ * @property It takes O(n*logn), where n=high-low+1 is the size of the input array.
+ */
+void mergeSort(int A[], int low, int high) 
+{
+    int mid;
+    if(low < high) {
+        mid = (low + high) / 2;
+        mergeSort(A, low, mid);
+        mergeSort(A, mid+1, high);
+        merge(A, low, mid, high);
+    }
     return;
 }
 
@@ -277,7 +277,7 @@ pairType sortArray(const int* randomArray, const int dim, const char* algo) {
  * @brief Main function.
  * @return Exit code 0.
  */
-int main() {
+int main(int argc, char *argv[]) {
     // Initialize the random seed only once.
     srand(SEED);
 

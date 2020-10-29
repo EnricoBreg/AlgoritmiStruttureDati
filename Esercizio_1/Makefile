@@ -1,2 +1,2 @@
-provaInsertionSort: provaInsertionSort.c
-	gcc -g -o provaInsertionSort provaInsertionSort.c
+hybridSort: HybridSort\ student\ version.c
+	gcc -g -o hybridSort HybridSort\ student\ version.c

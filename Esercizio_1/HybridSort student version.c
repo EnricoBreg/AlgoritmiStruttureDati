@@ -50,17 +50,17 @@ time_t SEED = 18;
 // Minimum size of the array.
 const int minSize = 100;
 // Maximum size of the array.
-const int maxSize = 10000;
+const int maxSize = 1000;
 // Number of experiments.
-const int numExperiments = 50;
+const int numExperiments = 10;
 // Granularity of the experiment.
-const int granularity = 50;
+const int granularity = 10;
 // Maximum random integer allowed when generating random numbers.
 const int maxRandInt = 1000000;
 // Thereshold parameter for the base case of HybridSort.            IMPORTANT: this is the result of the first part of the experiment!
-const int threshold = 20;
+const int threshold = 100;
 // Output type.
-const outputEnumType outputType = ONCONSOLE;
+const outputEnumType outputType = ONFILE;
 // Output pointer (for printing).
 FILE* outputPointer;
 
@@ -118,22 +118,18 @@ bool isSorted(const int* A, const int n) {
  * @param high Right-end index of the array.
  * @property It takes time O(n^2), where n=high-low+1 is the size of the input array.
  */
-void insertionSort(int* A, int low, int high) {
-    int i, j, key, temp; 
-    for(j = low; j <= high; j++) {
-        key = A[j];
-        i = j - 1;
-        while((i >= 0) && (A[i] > key)) {
-            // SWAP position
-            temp = A[i+1];
-            A[i+1] = A[i];
-            A[i] = temp;
-            i = i - 1;
+void insertionSort(int A[], int low, int high){
+    for(int j = low; j <= high ; j++ ){
+        int key = A[j]; // chiave di confronto se minore scambia
+        int  i = j-1;
+        while( i >= low && A[i] > key ){
+            int temp = A[i]; // temp -> variabile temporanea per scambio posizioni array
+            A[i] = A[i+1];
+            A[i+1] = temp;
+            i--; // decremento indice array
         }
         A[i+1] = key;
     }
-
-    return;
 }
 
 /**
@@ -220,6 +216,19 @@ void mergeSort(int A[], int low, int high)
  * @property It takes O(n*logn), where n=high-low+1 is the size of the input array.
  */
 void hybridSort(int* A, const int low, const int high) {
+    
+    if((high - low) > threshold)
+    {
+        int mid = (high + low) / 2;
+        hybridSort(A, low, mid);
+        hybridSort(A, mid+1, high),
+        merge(A, low, mid, high);
+    }
+    else
+    {
+        insertionSort(A, low, high);
+    }
+    return;
 }
 
 /**
@@ -348,11 +357,21 @@ int main(int argc, char *argv[]) {
             // prefix of size dim (<= maxSize) with random numbers.
             generateRandomArray(randomArray, dim);
 
-            // InsertionSort.
+            // insertionSort.
             pairIS = sortArray(randomArray, dim, "insertionSort");
             timeIS += pairIS.time;
             isSortedIS = pairIS.isSorted;
 
+            // mergeSort.
+            pairMS = sortArray(randomArray, dim, "mergeSort");
+            timeMS += pairMS.time;
+            isSortedMS = pairMS.isSorted;
+
+            // hybridSort
+            // Break point: 100
+            pairHS = sortArray(randomArray, dim, "hybridSort");
+            timeHS += pairHS.time;
+            isSortedHS = pairHS.isSorted;
 
         }
         // Printing the (sample mean as) result. Use TAB (\t) on file.
@@ -363,11 +382,11 @@ int main(int argc, char *argv[]) {
                 (double) timeMS/numExperiments, isSortedMS ? "true" : "false",      // MergeSort
                 (double) timeHS/numExperiments, isSortedHS ? "true" : "false");     // HybridSort
         else
-            fprintf(outputPointer, "%9d\t %17f\t %9s\t %17f\t %9s\t %17f\t %9s\n",
+            fprintf(outputPointer, "%9d\t %17d\t %9s\t %17d\t %9s\t %17d\t %9s\n",
                 dim,
-                (double) timeIS/numExperiments, isSortedIS ? "true" : "false",      // InsertionSort
-                (double) timeMS/numExperiments, isSortedMS ? "true" : "false",      // MergeSort
-                (double) timeHS/numExperiments, isSortedHS ? "true" : "false");     // HybridSort
+                (int) timeIS/numExperiments, isSortedIS ? "true" : "false",      // InsertionSort
+                (int) timeMS/numExperiments, isSortedMS ? "true" : "false",      // MergeSort
+                (int) timeHS/numExperiments, isSortedHS ? "true" : "false");     // HybridSort
     }
 
     // Print the ending part, only if it is on console.

@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void insertionSort(int* A, int low, int high) {
+/*void insertionSort(int* A, int low, int high) {
     int i, j, key, temp; 
     for(j = low; j <= high; j++) {
         key = A[j];
@@ -70,6 +70,21 @@ void insertionSort(int* A, int low, int high) {
     }
 
     return;
+}*/
+
+void insertionSort(int A[], int low, int high){
+    for(int j = low; j <= high ; j++ ){
+        int key = A[j]; // chiave di confronto se minore scambia
+        int  i = j-1;
+        while( i >= low && A[i] > key ){
+            // SWAP POSITION
+            int temp = A[i]; // temp -> variabile temporanea per scambio posizioni array
+            A[i] = A[i+1];
+            A[i+1] = temp;
+            i--; // decremento indice array
+        }
+        A[i+1] = key;
+    }
 }
 
 bool isSorted(int a[]) {

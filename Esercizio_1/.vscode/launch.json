@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/provaMerge",
+            "program": "${workspaceFolder}/provaMergeSort",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

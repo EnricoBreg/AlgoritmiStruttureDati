@@ -117,8 +117,42 @@ bool isSorted(const int* A, const int n) {
  * @param high Right-end index of the array.
  * @property It takes time O(n^2), where n=high-low+1 is the size of the input array.
  */
-void insertionSort(int* A, const int low, const int high) {
+void insertionSort(int* A, int low, int high) {
+    int i, j, key, temp; 
+    for(j = low; j <= high; j++) {
+        key = A[j];
+        i = j - 1;
+        while((i >= 0) && (A[i] > key)) {
+            // SWAP position
+            temp = A[i+1];
+            A[i+1] = A[i];
+            A[i] = temp;
+            i = i - 1;
+        }
+        A[i+1] = key;
+    }
 
+    return;
+}
+
+
+/**
+ * @brief MergeSort algorithm.
+ * @param A Array of random numbers to be sorted.
+ * @param low Left-end index of the array.
+ * @param high Right-end index of the array.
+ * @property It takes O(n*logn), where n=high-low+1 is the size of the input array.
+ */
+void mergeSort(int A[], int low, int high) 
+{
+    int mid;
+    if(low < high) {
+        mid = (low + high) / 2;
+        mergeSort(A, low, mid);
+        mergeSort(A, mid+1, high);
+        merge(A, low, mid, high);
+    }
+    return;
 }
 
 /**
@@ -129,19 +163,53 @@ void insertionSort(int* A, const int low, const int high) {
  * @param high Right-end index of the array.
  * @property It takes O(n), where n=high-low+1 is the size of the input array.
  */
-void merge(int* A, const int low, const int mid, const int high) {
+void merge(int *A, int low, int mid, int high) 
+{
+    int i, j, k, *B;
+    i = low;
+    j = mid + 1;
+    k = 0;
+    // L'array b ha dimensione right-left+1, cioè la dimensione dell'array a passato
+    B = (int*)malloc(sizeof(int) * (high-low+1));
 
-}
+    while((i <= mid) && (j <= high)) 
+    {
+        if(A[i] <= A[j])
+        {
+            B[k] = A[i];
+            i++;
+        }
+        else
+        {
+            B[k] = A[j];
+            j++;
+        }
+        k++;
+    }
 
-/**
- * @brief MergeSort algorithm.
- * @param A Array of random numbers to be sorted.
- * @param low Left-end index of the array.
- * @param high Right-end index of the array.
- * @property It takes O(n*logn), where n=high-low+1 is the size of the input array.
- */
-void mergeSort(int* A, const int low, const int high) {
+    // Rimangono da copiare gli eventuali elementi ancora da copiare
+    while(i <= mid) 
+    {
+        B[k] = A[i];
+        i++;
+        k++;
+    }
 
+    while(j <= high) 
+    {
+        B[k] = A[j];
+        j++;
+        k++;
+    }
+
+    // ricopiatura degli elementi dall'array di appoggio b all'array di appoggio a
+    for(k = low; k <= high; k++) {
+        A[k] = B[k - low];
+    }
+
+    // deallocazione della memoria allocata nella heap per l'array b
+    free(B);
+    return;
 }
 
 /**

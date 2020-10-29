@@ -1,2 +1,2 @@
-provaMergeSort: provaMergeSort.c
-	gcc -g provaMergeSort.c -o provaMergeSort
+provaInsertionSort: provaInsertionSort.c
+	gcc -g -o provaInsertionSort provaInsertionSort.c

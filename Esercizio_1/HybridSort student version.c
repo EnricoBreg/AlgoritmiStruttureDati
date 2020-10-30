@@ -48,13 +48,13 @@ typedef struct {
 // Seed (important for reproducibility).
 time_t SEED = 18;
 // Minimum size of the array.
-const int minSize = 100;
+const int minSize = 5;
 // Maximum size of the array.
 const int maxSize = 1000;
 // Number of experiments.
-const int numExperiments = 10;
+const int numExperiments = 100;
 // Granularity of the experiment.
-const int granularity = 10;
+const int granularity = 5;
 // Maximum random integer allowed when generating random numbers.
 const int maxRandInt = 1000000;
 // Thereshold parameter for the base case of HybridSort.            IMPORTANT: this is the result of the first part of the experiment!
@@ -382,11 +382,11 @@ int main(int argc, char *argv[]) {
                 (double) timeMS/numExperiments, isSortedMS ? "true" : "false",      // MergeSort
                 (double) timeHS/numExperiments, isSortedHS ? "true" : "false");     // HybridSort
         else
-            fprintf(outputPointer, "%9d\t %17d\t %9s\t %17d\t %9s\t %17d\t %9s\n",
+            fprintf(outputPointer, "%9d\t %17f\t %9s\t %17f\t %9s\t %17f\t %9s\n",
                 dim,
-                (int) timeIS/numExperiments, isSortedIS ? "true" : "false",      // InsertionSort
-                (int) timeMS/numExperiments, isSortedMS ? "true" : "false",      // MergeSort
-                (int) timeHS/numExperiments, isSortedHS ? "true" : "false");     // HybridSort
+                (double) timeIS/numExperiments, isSortedIS ? "true" : "false",      // InsertionSort
+                (double) timeMS/numExperiments, isSortedMS ? "true" : "false",      // MergeSort
+                (double) timeHS/numExperiments, isSortedHS ? "true" : "false");     // HybridSort
     }
 
     // Print the ending part, only if it is on console.

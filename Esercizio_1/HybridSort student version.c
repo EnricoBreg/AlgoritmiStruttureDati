@@ -48,7 +48,7 @@ typedef struct {
 // Seed (important for reproducibility).
 time_t SEED = 18;
 // Minimum size of the array.
-const int minSize = 5;
+const int minSize = 10;
 // Maximum size of the array.
 const int maxSize = 1000;
 // Number of experiments.
@@ -123,9 +123,9 @@ void insertionSort(int A[], int low, int high){
         int key = A[j]; // chiave di confronto se minore scambia
         int  i = j-1;
         while( i >= low && A[i] > key ){
-            int temp = A[i]; // temp -> variabile temporanea per scambio posizioni array
-            A[i] = A[i+1];
-            A[i+1] = temp;
+            //int temp = A[i]; // temp -> variabile temporanea per scambio posizioni array
+            A[i+1] = A[i];
+            //A[i+1] = temp;
             i--; // decremento indice array
         }
         A[i+1] = key;

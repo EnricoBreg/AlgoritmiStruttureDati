@@ -92,9 +92,9 @@ void insertionSort(int* A, int low, int high) {
         i = j - 1;
         while((i >= 0) && (A[i] > key)) {
             // SWAP position
-            temp = A[i+1];
+            //temp = A[i+1];
             A[i+1] = A[i];
-            A[i] = temp;
+            //A[i] = temp;
             i = i - 1;
         }
         A[i+1] = key;

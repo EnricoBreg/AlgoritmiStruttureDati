@@ -95,32 +95,35 @@ void linkedListPrint(linkedList_t *list)
  * @brief Delete a linked list node from linked list.
  * @param list The linked list.
  * @param x The linked list node to be deleted.
+ * 
+ * Per evitare errori di Segmentation Fault ho aggiunto un controllo per controllare
+ * che il nodo dal eliminare dalla lista sia diverso da NULL
  */
-int linkedListDelete(linkedList_t *list, linkedListNode_t *x)
+void linkedListDelete(linkedList_t *list, linkedListNode_t *x)
 {
-        if (x == NULL) return 1;
-        /* Rendo irragiungibile il nodo */
-        if (x->prev != NULL)
+        if (x != NULL)
         {
-                x->prev->next = x->next;
-        }
-        else
-        {
-                /* Nel caso sia il primo nodo della lista */
-                list->head = x->next;
-        }
+                if (x->prev != NULL)
+                {
+                        x->prev->next = x->next;
+                }
+                else
+                {
+                        /* Nel caso sia il primo nodo della lista */
+                        list->head = x->next;
+                }
 
-        if (x->next != NULL && x->next->prev != NULL)
-        {
-                x->next->prev = x->prev;
+                if (x->next != NULL && x->next->prev != NULL)
+                {
+                        x->next->prev = x->prev;
+                }
+
+                /* Aggiorno la dimensione della lista */
+                list->size -= 1;
         }
-
-        /* Aggiorno la dimensione della lista */
-        list->size -= 1;
-
         /* Nodo irraggiungibile, lo posso deallocare */
         free(x);
-        return 0;
+        return;
 }
 
 /**
@@ -133,7 +136,8 @@ int linkedListDelete(linkedList_t *list, linkedListNode_t *x)
 void linkedListFree(linkedList_t *list)
 {
         linkedListNode_t *temp;
-        while (list->head != NULL || list->size != 0) {
+        while (list->head != NULL || list->size != 0)
+        {
                 /* salvo la testa della lista da eliminare */
                 temp = list->head;
                 //temp->prev = NULL;
@@ -185,10 +189,7 @@ int main(int argc, char *argv[])
 
         /* PROVA ELIMINAZIONE DI UN NODO SELEZIONATO DALLA LISTA */
         printf("\nI'm deleting the selected node with key %d...\n", searched_value);
-        int ack = linkedListDelete(list, searched_node);
-        if (ack != 0) {
-                printf("\nThe node with key %d does not exist\n", searched_value);
-        }
+        linkedListDelete(list, searched_node);
 
         /* PROVA 2 RICERCA NELLA LISTA */
         printf("\nI'm searching the node...\n");
@@ -212,10 +213,8 @@ int main(int argc, char *argv[])
         printf("\nTest of list deleting...\n");
         linkedListFree(list);
 
-        /*
-        printf("\nLinked list after the deleting is:\n");
-        linkedListPrint(list);
-        */
+        printf("\nLinked list dimension: %d\n", list->size);
+        
         /* Termino */
         return 0;
 }

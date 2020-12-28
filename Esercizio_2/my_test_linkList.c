@@ -126,6 +126,9 @@ int linkedListDelete(linkedList_t *list, linkedListNode_t *x)
 /**
  * @brief Free the linked list.
  * @param list Linked list to be freed.
+ * L'eliminazione della lista viene gestita spostanndo il puntatore della testa sul nodo successivo
+ * finché questo non diventa NULL o la dimensione della lista è != 0, Ogni nodo deferenziato dal
+ * puntatore list viene poi eliminato usando linkedListDelete
  */
 void linkedListFree(linkedList_t *list)
 {
@@ -134,8 +137,8 @@ void linkedListFree(linkedList_t *list)
                 /* salvo la testa della lista da eliminare */
                 temp = list->head;
                 //temp->prev = NULL;
-                /* Assegno alla testa della lista il nodo successivo rendendo il nodo precedentemente head della lista
-                * non raggiungibile */
+                /* Assegno alla testa della lista il nodo successivo rendendo il nodo precedentemente
+                 * head della lista non raggiungibile */
                 list->head = list->head->next;
                 linkedListDelete(list, temp);
         }

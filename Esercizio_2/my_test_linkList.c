@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const unsigned int LIST_SIZE = 10;
+const unsigned int LIST_SIZE = 3;
 
 /* ------------ Lista collegata ------------ */
 typedef struct linkedListNode_t
@@ -38,7 +38,7 @@ linkedList_t *createLinkedList(void)
 {
         linkedList_t *list = malloc(sizeof(linkedList_t));
         list->head = NULL;
-        list->size = LIST_SIZE;
+        list->size = 0;
         return list;
 }
 
@@ -56,6 +56,7 @@ void linkedListInsert(linkedList_t *list, linkedListNode_t *x)
         }
         list->head = x;
         x->prev = x;
+        list->size += 1;
         return;
 }
 
@@ -95,8 +96,9 @@ void linkedListPrint(linkedList_t *list)
  * @param list The linked list.
  * @param x The linked list node to be deleted.
  */
-void linkedListDelete(linkedList_t *list, linkedListNode_t *x)
+int linkedListDelete(linkedList_t *list, linkedListNode_t *x)
 {
+        if (x == NULL) return 1;
         /* Rendo irragiungibile il nodo */
         if (x->prev != NULL)
         {
@@ -108,14 +110,17 @@ void linkedListDelete(linkedList_t *list, linkedListNode_t *x)
                 list->head = x->next;
         }
 
-        if (x->next->prev != NULL)
+        if (x->next != NULL && x->next->prev != NULL)
         {
                 x->next->prev = x->prev;
         }
 
+        /* Aggiorno la dimensione della lista */
+        list->size -= 1;
+
         /* Nodo irraggiungibile, lo posso deallocare */
         free(x);
-        return;
+        return 0;
 }
 
 /**
@@ -124,7 +129,17 @@ void linkedListDelete(linkedList_t *list, linkedListNode_t *x)
  */
 void linkedListFree(linkedList_t *list)
 {
-        
+        linkedListNode_t *temp;
+        while (list->head != NULL || list->size != 0) {
+                /* salvo la testa della lista da eliminare */
+                temp = list->head;
+                //temp->prev = NULL;
+                /* Assegno alla testa della lista il nodo successivo rendendo il nodo precedentemente head della lista
+                * non raggiungibile */
+                list->head = list->head->next;
+                linkedListDelete(list, temp);
+        }
+        return;
 }
 
 /* ============================= MAIN ============================= */
@@ -132,16 +147,20 @@ int main(int argc, char *argv[])
 {
         unsigned int i;
         /* Array di interi da inserire nella hash table */
-        int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
+        //int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
+        int a[] = {10, 5, 6};
 
+        /* PROVA CREAZIONE DELLA LISTA */
         linkedList_t *list = createLinkedList();
 
+        /* PROVA INSERIMENTO NELLA LISTA */
         for (i = 0; i < LIST_SIZE; i++)
         {
                 linkedListNode_t *node = createLinkedListNode(a[i]);
                 linkedListInsert(list, node);
         }
 
+        /* PROVA RICERVA CHIAVE NELLA LISTA */
         /* Valore da ricercare */
         int searched_value = 82;
         /* Ricerca nella lista */
@@ -156,13 +175,19 @@ int main(int argc, char *argv[])
                 printf("The linked list node with key %d does not exist.\n\n", searched_value);
         }
 
+        /* PROVA STAMPA DELLA LISTA */
         printf("\nYour linked list is:\n");
         linkedListPrint(list);
         printf("\n");
 
+        /* PROVA ELIMINAZIONE DI UN NODO SELEZIONATO DALLA LISTA */
         printf("\nI'm deleting the selected node with key %d...\n", searched_value);
-        linkedListDelete(list, searched_node);
+        int ack = linkedListDelete(list, searched_node);
+        if (ack != 0) {
+                printf("\nThe node with key %d does not exist\n", searched_value);
+        }
 
+        /* PROVA 2 RICERCA NELLA LISTA */
         printf("\nI'm searching the node...\n");
         /* Provo a cercare il nodo eliminato per vedere se l'elimiazione funziona bene */
         searched_node = linkedListSearch(list, searched_value);
@@ -175,10 +200,19 @@ int main(int argc, char *argv[])
                 printf("The linked list node with key %d does not exist.\n\n", searched_value);
         }
 
-
         printf("\nYour linked list now is:\n");
         linkedListPrint(list);
 
+        /* PROVA ELIMINAZIONE DELLA LISTA */
+        printf("\n");
+
+        printf("\nTest of list deleting...\n");
+        linkedListFree(list);
+
+        /*
+        printf("\nLinked list after the deleting is:\n");
+        linkedListPrint(list);
+        */
         /* Termino */
         return 0;
 }

@@ -213,6 +213,7 @@ int main(int argc, char *argv[])
         printf("\nTest of list deleting...\n");
         linkedListFree(list);
 
+        /* CONTROLLO LA DIMENSIONE DELLA LISTA */
         printf("\nLinked list dimension: %d\n", list->size);
         
         /* Termino */

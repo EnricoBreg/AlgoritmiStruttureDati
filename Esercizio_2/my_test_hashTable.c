@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 const unsigned int LIST_SIZE = 3;
 
@@ -22,7 +23,31 @@ typedef struct linkedList_t
         // Pointer to the head node of the list.
         struct linkedListNode_t *head;
 } linkedList_t;
-/* ------------ Fine Lista collegata ------------ */
+/* ------------ End of linked list ------------ */
+
+// ----- HASHTABLE ----- //
+
+/**
+ * @brief Hashtable entry data type.
+ */
+typedef struct hashtableEntry_t
+{
+        // Pointer to the list.
+        struct linkedList_t *list;
+} hashtableEntry_t;
+
+/**
+ * @brief Hashtable data type.
+ */
+typedef struct hashtable_t
+{
+        // Size in number of entries of the hashtable.
+        unsigned int size;
+        // Array of pointers to entries.
+        struct hashtableEntry_t **entry;
+} hashtable_t;
+
+// ----- End of HASHTABLE ----- //
 
 /* ========================== FUNZIONI ==========================*/
 linkedListNode_t *createLinkedListNode(const int v)
@@ -149,75 +174,123 @@ void linkedListFree(linkedList_t *list)
         return;
 }
 
+// ================================================================= //(hashtableEntry_t)
+// ----- HASHTABLE ----- //
+
+/**
+ * @brief Create a new hashtable.
+ * @param s The size of the hashtable (i.e., the number of entries).
+ * @return The created hashtable.
+ */
+hashtable_t *createHashtable(const unsigned int s)
+{
+        size_t i;
+        /** Alloco la memoria per la tabella hash */
+        hashtable_t *hash_table = malloc(sizeof(hashtable_t));
+        
+        hash_table->size = s;
+        *hash_table->entry = (hashtableEntry_t*)malloc(sizeof(hashtableEntry_t)*s);
+
+        for (i = 0; i < hash_table->size; i++)
+        {
+                /** Inizializzo le liste delle entry */
+                hash_table->entry[i]->list = createLinkedList();
+        }
+
+        return hash_table;        
+
+}
+
+/**
+ * @brief Hash function computing the key for a given integer.
+ * @param hashtbl The hashtable needed to access the size of it.
+ * @param v The integer for which the key must be computed.
+ * @return The computed key.
+ */
+const unsigned int hashFunction(hashtable_t *hashtbl, const int v)
+{
+        return v % hashtbl->size;
+}
+
+/**
+ * @brief Insert value in the hashtable.
+ * @param hashtbl The hashtable.
+ * @param v Value to be inserted.
+ */
+void hashtableInsert(hashtable_t *hashtbl, const int v)
+{
+        linkedListNode_t *x = createLinkedListNode(v);
+        unsigned int i = hashFunction(hashtbl, v);
+        linkedListInsert(hashtbl->entry[i]->list, x);
+        return;
+}
+/**
+ * @brief Search for a value in the hashtable.
+ * @param hashtbl The hashtable.
+ * @param v Value to be searched.
+ * @return Linked list node containing such value, if it exists; otherwise, NULL.
+ */
+/*linkedListNode_t *hashtableSearch(hashtable_t *hashtbl, const int v)
+{
+        return;
+}*/
+
+/**
+ * @brief Delete value from hashtable.
+ * @param hashtbl The hashtable.
+ * @param x Linked list node to be deleted.
+ */
+/*void hashtableDelete(hashtable_t *hashtbl, linkedListNode_t *x)
+{
+}*/
+
+/**
+ * @brief Print the hashtable.
+ * @param hashtbl Hashtable to be printed.
+ */
+void hashtablePrint(hashtable_t *hashtbl)
+{
+        for (int i = 0; i < hashtbl->size; i++)
+        {
+                fprintf(stdout, "%d => ", i);
+                linkedListPrint(hashtbl->entry[i]->list);
+                fprintf(stdout, "\n");
+        }
+}
+
+/**
+ * @brief Test hashtable if it is correctly implemented.
+ * @return True if it is correct; otherwise, false.
+ */
+/*bool hashtableTest()
+{
+        return;
+}*/
+
+/**
+ * @brief Free hashtable.
+ * @param hashtbl Hashtable to be freed.
+ */
+void hashtableFree(hashtable_t *hashtbl)
+{
+}
+
+// ================================================================ //
+
 /* ============================= MAIN ============================= */
 int main(int argc, char *argv[])
 {
         unsigned int i;
         /* Array di interi da inserire nella hash table */
-        //int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
-        int a[] = {10, 5, 6};
-
-        /* PROVA CREAZIONE DELLA LISTA */
-        linkedList_t *list = createLinkedList();
-
-        /* PROVA INSERIMENTO NELLA LISTA */
-        for (i = 0; i < LIST_SIZE; i++)
-        {
-                linkedListNode_t *node = createLinkedListNode(a[i]);
-                linkedListInsert(list, node);
-        }
-
-        /* PROVA RICERVA CHIAVE NELLA LISTA */
-        /* Valore da ricercare */
-        int searched_value = 82;
-        /* Ricerca nella lista */
-        linkedListNode_t *searched_node = linkedListSearch(list, searched_value);
-        printf("\nI'm searching the node...\n");
-        if (searched_node != NULL)
-        {
-                printf("The linked list node with key %d exists.\n\n", searched_value);
-        }
-        else if (searched_node == NULL)
-        {
-                printf("The linked list node with key %d does not exist.\n\n", searched_value);
-        }
-
-        /* PROVA STAMPA DELLA LISTA */
-        printf("\nYour linked list is:\n");
-        linkedListPrint(list);
-        printf("\n");
-
-        /* PROVA ELIMINAZIONE DI UN NODO SELEZIONATO DALLA LISTA */
-        printf("\nI'm deleting the selected node with key %d...\n", searched_value);
-        linkedListDelete(list, searched_node);
-
-        /* PROVA 2 RICERCA NELLA LISTA */
-        printf("\nI'm searching the node...\n");
-        /* Provo a cercare il nodo eliminato per vedere se l'elimiazione funziona bene */
-        searched_node = linkedListSearch(list, searched_value);
-        if (searched_node != NULL)
-        {
-                printf("The linked list node with key %d exists.\n\n", searched_value);
-        }
-        else if (searched_node == NULL)
-        {
-                printf("The linked list node with key %d does not exist.\n\n", searched_value);
-        }
-
-        printf("\nYour linked list now is:\n");
-        linkedListPrint(list);
-
-        /* PROVA ELIMINAZIONE DELLA LISTA */
-        printf("\n");
-
-        printf("\nTest of list deleting...\n");
-        linkedListFree(list);
-
-        /* CONTROLLO LA DIMENSIONE DELLA LISTA */
-        printf("\nLinked list dimension: %d\n", list->size);
-
-        free(list);
+        int ht_size = 10;
+        int key = 20;
+        int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
         
+        hashtable_t *hash_table;
+
+        hash_table = createHashtable(ht_size);
+        fprintf(stdout, "\nThe size of hash table is: %d\n", hash_table->size);
+
         /* Termino */
         return 0;
 }

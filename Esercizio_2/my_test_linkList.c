@@ -49,14 +49,21 @@ linkedList_t *createLinkedList(void)
  */
 void linkedListInsert(linkedList_t *list, linkedListNode_t *x)
 {
+        /** Il successore di x nella lista è la "vecchia" testa della lista */
         x->next = list->head;
-        if (list->head != NULL)
-        {
+        /** Se la lista non è vuota... */
+        if (list->head != NULL) {
+                /** ... il predecessore della "vecchia" testa della lista 
+                 * diventa x */
                 list->head->prev = x;
         }
+        /** Assegno x come nuova testa della lista */
         list->head = x;
-        x->prev = x;
+        /** Il campo prev della testa viene settato a NULL */
+        x->prev = NULL;
+        /** Aumento la dimensione della lista */
         list->size += 1;
+        /** Terminazione */
         return;
 }
 

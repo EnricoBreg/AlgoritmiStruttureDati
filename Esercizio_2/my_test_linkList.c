@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const unsigned int LIST_SIZE = 3;
+const unsigned int LIST_SIZE = 10;        
 
 /* ------------ Lista collegata ------------ */
 typedef struct linkedListNode_t
@@ -101,28 +101,32 @@ void linkedListPrint(linkedList_t *list)
  */
 void linkedListDelete(linkedList_t *list, linkedListNode_t *x)
 {
-        if (x != NULL)
-        {
-                if (x->prev != NULL)
-                {
-                        x->prev->next = x->next;
-                }
-                else
-                {
-                        /* Nel caso sia il primo nodo della lista */
-                        list->head = x->next;
-                }
-
-                if (x->next != NULL && x->next->prev != NULL)
-                {
-                        x->next->prev = x->prev;
-                }
-
-                /* Aggiorno la dimensione della lista */
-                list->size -= 1;
+        if (x == NULL) {
+                /** Se il nodo da eliminare è NULL lo dealloco e termino*/
+                free(x);
+                return;
         }
-        /* Nodo irraggiungibile, lo posso deallocare */
+        
+        /** Assegnazione del nuovo valore al campo next del predeccessore */
+        if (x->prev != NULL) {
+                /** Caso di eliminazione di un nodo generico della lista */
+                x->prev->next = x->next;
+        }
+        else {
+                /** Caso di eliminazione del nodo in testa alla lista */
+                list->head = x->next;
+        }
+        /** Assegnazione nuovo valore al campo prev del successore */
+        if (x->next != NULL) {
+                x->next->prev = x->prev;
+        }
+        /** Il nodo è irraggiungibile, lo posso deallocare */
         free(x);
+
+        /** Diminuisco la dimensione della lista */
+        list->size -= 1;
+
+        /** Terminazione */
         return;
 }
 
@@ -156,8 +160,8 @@ int main(int argc, char *argv[])
 {
         unsigned int i;
         /* Array di interi da inserire nella hash table */
-        //int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
-        int a[] = {10, 5, 6};
+        int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
+//        int a[] = {10, 5, 6};
 
         /* PROVA CREAZIONE DELLA LISTA */
         linkedList_t *list = createLinkedList();
@@ -193,26 +197,11 @@ int main(int argc, char *argv[])
         printf("\nI'm deleting the selected node with key %d...\n", searched_value);
         linkedListDelete(list, searched_node);
 
-        /* PROVA 2 RICERCA NELLA LISTA */
-        printf("\nI'm searching the node...\n");
-        /* Provo a cercare il nodo eliminato per vedere se l'elimiazione funziona bene */
-        searched_node = linkedListSearch(list, searched_value);
-        if (searched_node != NULL)
-        {
-                printf("The linked list node with key %d exists.\n\n", searched_value);
-        }
-        else if (searched_node == NULL)
-        {
-                printf("The linked list node with key %d does not exist.\n\n", searched_value);
-        }
-
-        printf("\nYour linked list now is:\n");
+        printf("\nYour linked list is:\n");
         linkedListPrint(list);
-
-        /* PROVA ELIMINAZIONE DELLA LISTA */
         printf("\n");
 
-        printf("\nTest of list deleting...\n");
+        /** Libero la memoria allocata alla lista */
         linkedListFree(list);
         
         /* Termino */

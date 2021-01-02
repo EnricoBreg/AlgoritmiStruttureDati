@@ -272,7 +272,7 @@ void hashtablePrint(hashtable_t *hashtbl)
 {
         for (int i = 0; i < hashtbl->size; i++)
         {
-                fprintf(stdout, "%d => ", i);
+                fprintf(stdout, "[%d] => ", i);
                 linkedListPrint(hashtbl->entry[i]->list);
                 fprintf(stdout, "\n");
         }

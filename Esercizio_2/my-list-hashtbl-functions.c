@@ -156,7 +156,7 @@ hashtable_t *createHashtable(const unsigned int s)
 {
         size_t i;
         /** Alloco la memoria per la tabella hash */
-        hashtable_t *hashtbl = malloc(sizeof(hashtable_t));
+        hashtable_t *hashtbl = (hashtable_t*)malloc(sizeof(hashtable_t));
 
         /** Assegno la dimensione della tabella hash */
         hashtbl->size = s;
@@ -307,9 +307,9 @@ void hashtableFree(hashtable_t *hashtbl)
 bool hashtableTest(hashtable_t *hashtbl) 
 {
         unsigned int i;
-        int hashfvalue;
-        hashtable_t *tmptbl = hashtbl;
-        linkedListNode_t *htelist = NULL;
+        int hashfvalue;				/** hash function value */
+        hashtable_t *tmptbl = hashtbl;		/** temporary table */
+        linkedListNode_t *htelist = NULL; 	/** hash table entry list */
 
         for (i = 0; i < tmptbl->size; i++) {
                 htelist = tmptbl->entry[i]->list->head;

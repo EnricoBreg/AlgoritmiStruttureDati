@@ -71,17 +71,25 @@ linkedList_t *createLinkedList(void)
  * @brief Insert linked list node in the head of the linked list.
  * @param list The linked list.
  * @param x Linked list node to be inserted.
+ * La funzione inserisce in testa alla lista il nodo x passato come parametro
  */
 void linkedListInsert(linkedList_t *list, linkedListNode_t *x)
 {
+        /** Il successore di x nella lista è la "vecchia" testa della lista */
         x->next = list->head;
-        if (list->head != NULL)
-        {
+        /** Se la lista non è vuota... */
+        if (list->head != NULL) {
+                /** ... il predecessore della "vecchia" testa della lista 
+                 * diventa x */
                 list->head->prev = x;
         }
+        /** Assegno x come nuova testa della lista */
         list->head = x;
-        x->prev = x;
+        /** Il campo prev della testa viene settato a NULL */
+        x->prev = NULL;
+        /** Aumento la dimensione della lista */
         list->size += 1;
+        /** Terminazione */
         return;
 }
 
@@ -126,28 +134,32 @@ void linkedListPrint(linkedList_t *list)
  */
 void linkedListDelete(linkedList_t *list, linkedListNode_t *x)
 {
-        if (x != NULL)
-        {
-                if (x->prev != NULL)
-                {
-                        x->prev->next = x->next;
-                }
-                else
-                {
-                        /* Nel caso sia il primo nodo della lista */
-                        list->head = x->next;
-                }
-
-                if (x->next != NULL && x->next->prev != NULL)
-                {
-                        x->next->prev = x->prev;
-                }
-
-                /* Aggiorno la dimensione della lista */
-                list->size -= 1;
+        if (x == NULL) {
+                /** Se il nodo da eliminare è NULL lo dealloco e termino*/
+                free(x);
+                return;
         }
-        /* Nodo irraggiungibile, lo posso deallocare */
+        
+        /** Assegnazione del nuovo valore al campo next del predeccessore */
+        if (x->prev != NULL) {
+                /** Caso di eliminazione di un nodo generico della lista */
+                x->prev->next = x->next;
+        }
+        else {
+                /** Caso di eliminazione del nodo in testa alla lista */
+                list->head = x->next;
+        }
+        /** Assegnazione nuovo valore al campo prev del successore */
+        if (x->next != NULL) {
+                x->next->prev = x->prev;
+        }
+        /** Il nodo è irraggiungibile, lo posso deallocare */
         free(x);
+
+        /** Diminuisco la dimensione della lista */
+        list->size -= 1;
+
+        /** Terminazione */
         return;
 }
 
@@ -171,6 +183,9 @@ void linkedListFree(linkedList_t *list)
                 list->head = list->head->next;
                 linkedListDelete(list, temp);
         }
+        /* Infine, dealloco il puntatore alla testa della lista */
+        free(list);
+        /* Terminazione */
         return;
 }
 
@@ -186,20 +201,28 @@ hashtable_t *createHashtable(const unsigned int s)
 {
         size_t i;
         /** Alloco la memoria per la tabella hash */
-        hashtable_t *hash_table = malloc(sizeof(hashtable_t));
+        hashtable_t *hashtbl = malloc(sizeof(hashtable_t));
 
-        hash_table->size = s;
-        hash_table->entry = (hashtableEntry_t **)malloc(sizeof(hashtableEntry_t *) * s);
+        /** Assegno la dimensione della tabella hash */
+        hashtbl->size = s;
+        /** Alloco un array dinamico di dimensione s che conterrà i puntatori alle liste 
+         * che conterranno le chiavi */
+        hashtbl->entry = (hashtableEntry_t **)malloc(sizeof(hashtableEntry_t **) * s);
 
-        for (i = 0; i < hash_table->size; i++)
+        for (i = 0; i < hashtbl->size; i++)
         {
-                hashtableEntry_t *new_entry = malloc(sizeof(hashtableEntry_t));
+                /** Alloco la new entry da essegnare alla posizione i-esima
+                 * della lista */
+                hashtableEntry_t *new_entry = (hashtableEntry_t*)malloc(sizeof(hashtableEntry_t*));
+                /** Per la entry i-esima, creo una nuova lista collegata che 
+                 * conterrà le chiavi */
                 new_entry->list = createLinkedList();
-                hash_table->entry[i] = new_entry;
+                /* Assegno la new entry alla posizione i-esima */
+                hashtbl->entry[i] = new_entry;
         }
 
         /** Ritorno la tabella hash creata */
-        return hash_table;
+        return hashtbl;
 }
 
 /**
@@ -220,9 +243,15 @@ const unsigned int hashFunction(hashtable_t *hashtbl, const int v)
  */
 void hashtableInsert(hashtable_t *hashtbl, const int v)
 {
+        /* Creo il nodo per la lista che conterrà l'intero v */
         linkedListNode_t *x = createLinkedListNode(v);
+        /** Attraverso la funzione hash ricavo la posizione di v
+         * nella entry i-esima della tabella hash */
         unsigned int i = hashFunction(hashtbl, v);
+        /** Inserisco il nodo creato in testa alla lista i-esima 
+         * della tabella hash */
         linkedListInsert(hashtbl->entry[i]->list, x);
+        /* Terminazione */
         return;
 }
 /**
@@ -230,20 +259,55 @@ void hashtableInsert(hashtable_t *hashtbl, const int v)
  * @param hashtbl The hashtable.
  * @param v Value to be searched.
  * @return Linked list node containing such value, if it exists; otherwise, NULL.
+ * 
+ * La funzione ritorna il nodo cercato in caso di successo, altrimenti ritorna
+ * NULL se il valore cercato non è presente nella tabella hash
  */
-/*linkedListNode_t *hashtableSearch(hashtable_t *hashtbl, const int v)
+linkedListNode_t *hashtableSearch(hashtable_t *hashtbl, const int v)
 {
-        return;
-}*/
+        /** Creo un puntatore al nodo da cercare */
+        linkedListNode_t *searched_node = NULL;
+        /** La variabile i rappresenta la entry i-esima della tabella hash
+         * dove cercare la chiave v passata */
+        unsigned int i = hashFunction(hashtbl, v);
+        /** Ricerca dalla chiave v nella i-esima lista della tabella hash */
+        searched_node = linkedListSearch(hashtbl->entry[i]->list, v);
+        /** Ritorno il nodo cercato, se la funzione di ricerca non ha ritornato nulla
+         * il nodo vale NULL come valore inizialmente assegnato */
+        return searched_node;
+}
 
 /**
  * @brief Delete value from hashtable.
  * @param hashtbl The hashtable.
  * @param x Linked list node to be deleted.
  */
-/*void hashtableDelete(hashtable_t *hashtbl, linkedListNode_t *x)
+void hashtableDelete(hashtable_t *hashtbl, linkedListNode_t *x)
 {
-}*/
+        unsigned int i;
+
+        /** Questa scelta è stata fatta in quanto la operazione di eliminazione
+         * viene verosimilmente collegata ad una operazione di ricerca.
+         * Se il nodo cercato non esiste, allora non ha senso eliminarlo.
+         * Se non fosse stata fatta tale scelta con molta probabilità si incorre
+         * in un Segmentation Fault. */
+        if (x == NULL)
+        {
+                /** Il valore del linkedListNode_t x è NULL, cioè non esiste e
+                 * non ha senso proseguire */
+                return;
+        }
+
+        /** Il nodo da eliminare è diverso da NULL e posso proseguire
+         * con la cancellazione */
+        i = hashFunction(hashtbl, x->value);
+
+        /** Eseguo la cancellazione sulla entry i-esima della tabella hash */
+        linkedListDelete(hashtbl->entry[i]->list, x);
+
+        /** Terminazione*/
+        return;
+}
 
 /**
  * @brief Print the hashtable.
@@ -274,6 +338,20 @@ void hashtablePrint(hashtable_t *hashtbl)
  */
 void hashtableFree(hashtable_t *hashtbl)
 {
+        unsigned int i;
+        
+        /** Per ogni entri uso linkedListFree per deallocare l'intera
+         * lista della i-esima entry
+        */
+        for(i = 0; i < hashtbl->size; i++) {
+                linkedListFree(hashtbl->entry[i]->list);
+        }
+        /** Una volta terminata la deallocazione di tutte le liste 
+         * posso deallocare anche l'array dinamico delle entry della tabella hash */
+        free(hashtbl);
+
+        /** Terminazione */
+        return;
 }
 
 // ================================================================ //
@@ -284,13 +362,39 @@ int main(int argc, char *argv[])
         unsigned int i;
         /* Array di interi da inserire nella hash table */
         int ht_size = 10;
-        int key = 20;
         int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
 
-        hashtable_t *hash_table;
+        hashtable_t *hashtbl = NULL;
 
-        hash_table = createHashtable(ht_size);
-        fprintf(stdout, "\nThe size of hash table is: %d\n", hash_table->size);
+        hashtbl = createHashtable(ht_size);
+        fprintf(stdout, "\nThe size of hash table is: %d\n", hashtbl->size);
+
+        fprintf(stdout, "\nProva inserimento array in tabella hash...\n");
+        for (i = 0; i < hashtbl->size; i++)
+        {
+                hashtableInsert(hashtbl, a[i]);
+        }
+
+        fprintf(stdout, "\nStampo la tabella hash...\n");
+        hashtablePrint(hashtbl);
+
+        fprintf(stdout, "\nProva ricerca valore nella tabella hash...\n");
+        linkedListNode_t *node = hashtableSearch(hashtbl, a[2]);
+
+        if (node != NULL)
+        {
+                fprintf(stderr, "This value is in the table\n");
+        }
+        else
+        {
+                fprintf(stdout, "This value is not in the table\n");
+        }
+
+        hashtableDelete(hashtbl, node);
+
+        hashtablePrint(hashtbl);
+
+        hashtableFree(hashtbl);        
 
         /* Termino */
         return 0;

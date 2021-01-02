@@ -187,18 +187,19 @@ hashtable_t *createHashtable(const unsigned int s)
         size_t i;
         /** Alloco la memoria per la tabella hash */
         hashtable_t *hash_table = malloc(sizeof(hashtable_t));
-        
+
         hash_table->size = s;
-        *hash_table->entry = (hashtableEntry_t*)malloc(sizeof(hashtableEntry_t)*s);
+        hash_table->entry = (hashtableEntry_t **)malloc(sizeof(hashtableEntry_t *) * s);
 
         for (i = 0; i < hash_table->size; i++)
         {
-                /** Inizializzo le liste delle entry */
-                hash_table->entry[i]->list = createLinkedList();
+                hashtableEntry_t *new_entry = malloc(sizeof(hashtableEntry_t));
+                new_entry->list = createLinkedList();
+                hash_table->entry[i] = new_entry;
         }
 
-        return hash_table;        
-
+        /** Ritorno la tabella hash creata */
+        return hash_table;
 }
 
 /**
@@ -285,7 +286,7 @@ int main(int argc, char *argv[])
         int ht_size = 10;
         int key = 20;
         int a[] = {10, 5, 6, 4, 8, 9, 21, 45, 82, 70};
-        
+
         hashtable_t *hash_table;
 
         hash_table = createHashtable(ht_size);

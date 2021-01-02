@@ -146,6 +146,8 @@ void linkedListFree(linkedList_t *list)
                 list->head = list->head->next;
                 linkedListDelete(list, temp);
         }
+
+        free(list);
         return;
 }
 
@@ -212,11 +214,6 @@ int main(int argc, char *argv[])
 
         printf("\nTest of list deleting...\n");
         linkedListFree(list);
-
-        /* CONTROLLO LA DIMENSIONE DELLA LISTA */
-        printf("\nLinked list dimension: %d\n", list->size);
-
-        free(list);
         
         /* Termino */
         return 0;

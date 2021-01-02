@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
-const unsigned int LIST_SIZE = 3;
+#include "my-list-hashtbl-functions.h"
 
 /* ------------ Lista collegata ------------ */
 typedef struct linkedListNode_t
@@ -327,10 +326,28 @@ void hashtablePrint(hashtable_t *hashtbl)
  * @brief Test hashtable if it is correctly implemented.
  * @return True if it is correct; otherwise, false.
  */
-/*bool hashtableTest()
+bool hashtableTest(hashtable_t *hashtbl)
 {
-        return;
-}*/
+        unsigned int i;
+        int hashfvalue;
+        hashtable_t *tmptbl = hashtbl;
+        linkedListNode_t *htelist = NULL;
+
+        for (i = 0; i < tmptbl->size; i++) {
+                htelist = tmptbl->entry[i]->list->head;
+                while(htelist != NULL) {
+                        hashfvalue = hashFunction(tmptbl, htelist->value);
+                        if (hashfvalue != i) {
+                                return false;
+                        }
+                        /** Scorri la lista */
+                        htelist = htelist->next;
+                }
+                htelist = NULL;
+        }
+
+        return true;
+}
 
 /**
  * @brief Free hashtable.
@@ -393,6 +410,15 @@ int main(int argc, char *argv[])
         hashtableDelete(hashtbl, node);
 
         hashtablePrint(hashtbl);
+
+
+        /** Prova hashtable check */
+        bool isHashTable;
+        if ((isHashTable = hashtableTest(hashtbl)) == false) {
+                fprintf(stderr, "\nNon è una hash table\n");
+        } else {
+                fprintf(stderr, "\nè una hash table\n");
+        }
 
         hashtableFree(hashtbl);        
 

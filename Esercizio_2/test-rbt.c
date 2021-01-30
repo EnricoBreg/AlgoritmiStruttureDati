@@ -74,7 +74,7 @@ void rbtLeftRotate(rbt_t *t, rbtNode_t *x);
  * @param The RBT.
  * @param The RBT node to rotate on.
  */
-void rbtRightRotate(rbt_t *, rbtNode_t *);
+void rbtRightRotate(rbt_t *t, rbtNode_t *x);
 
 /**
  * @brief Inserimento di un nodo z nell'albero t.
@@ -282,7 +282,9 @@ void rbtLeftRotate(rbt_t *t, rbtNode_t *x) {
     return;
 }
 
-void rbtRightRotate(rbt_t *, rbtNode_t *);
+void rbtRightRotate(rbt_t *t, rbtNode_t *x) {
+
+}
 
 
 void rbtInsert(rbt_t *t, rbtNode_t *z)
@@ -346,7 +348,7 @@ void rbtInsertFixupLeft(rbt_t *t, rbtNode_t *z)
     /** y = Zio di z */
     rbtNode_t *y = z->parent->parent->right;
 
-    if (y->color = 'R') {
+    if (y->color == 'R') {
         /** Se lo zio è rosso, caso 2: ricolorazione */
         z->parent->color = 'B';
         y->color = 'B';
@@ -378,7 +380,7 @@ void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z)
     /** y = Zio di z */
     rbtNode_t *y = z->parent->parent->left;
 
-    if (y->color = 'R') {
+    if (y->color == 'R') {
         /** Se lo zio è rosso, caso 2: ricolorazione */
         z->parent->color = 'B';
         y->color = 'B';

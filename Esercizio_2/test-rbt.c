@@ -5,6 +5,8 @@
 #include <string.h>
 #include <math.h>
 
+static unsigned int N_KEYS = 3;
+
 // DICHIARAZIONE TIPI DI DATO E PROTOTIPI FUNZIONI
 
 /**
@@ -172,7 +174,8 @@ int main(int argc, char **argv)
 {
 
     // int num = 18;
-    int num_arr[6] = {18, 17, 6, 20, 51, 40};
+    // int num_arr[] = {18, 17, 6, 20, 51, 40};
+    int num_arr[] =  {1, 2, 3};
     unsigned int i;
     rbt_t *t;
     rbtNode_t *nodo;
@@ -181,7 +184,7 @@ int main(int argc, char **argv)
     t = createRbt();
 
     printf("\nInserimento di nuovi nodi...\n");
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < N_KEYS; i++) {
         // crea il nodo
         printf("Alloco memoria per il nodo con chiave %d...\n", num_arr[i]);
         nodo = createRbtNode(num_arr[i]);

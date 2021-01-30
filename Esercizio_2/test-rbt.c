@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 
     // int num = 18;
     // int num_arr[] = {18, 17, 6, 20, 51, 40};
-    int num_arr[] =  {1, 2, 3};
+    int num_arr[] =  {3,2,1};
     unsigned int i;
     rbt_t *t;
     rbtNode_t *nodo;
@@ -283,7 +283,33 @@ void rbtLeftRotate(rbt_t *t, rbtNode_t *x) {
 }
 
 void rbtRightRotate(rbt_t *t, rbtNode_t *x) {
+        rbtNode_t *y;
 
+    /** y: figlio destro del nodo x*/
+    y = x->left;
+    /** figlio sx di y è il figlio sinistro di x */
+    x->left = y->right;
+
+    if (y->right != t->nil) {
+        y->right->parent = x;
+    }
+    
+    y->parent = x->parent;
+
+    if (x->parent == t->nil) {
+        t->root = y;
+    }
+    if ((x->parent != t->nil) &&  (x == x->parent->left)) {
+        x->parent->left = y;
+    }
+    if ((x->parent != t->nil) && (x == x->parent->right)) {
+        x->parent->right = y;
+    }
+
+    y->right = x;
+    x->parent = y;
+
+    return;
 }
 
 

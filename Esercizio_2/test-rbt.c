@@ -63,10 +63,10 @@ rbt_t *createRbt();
 
 /**
  * @brief Left rotate operation.
- * @param The RBT.
- * @param The RBT node to rotate on.
+ * @param t RBT.
+ * @param x RBT node to rotate on.
  */
-void rbtLeftRotate(rbt_t *, rbtNode_t *);
+void rbtLeftRotate(rbt_t *t, rbtNode_t *x);
 /**
  * @brief Right rotate operation.
  * @param The RBT.
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     printf("\nVisito l'albero...\n");
     rbtInOrder(t, t->root);
 
-    printf("\nlog2(%d) = %d\n", t->size, (int)log2f((float)t->size));
+    printf("\n\n\nh albero: log2(%d) = %d\n", t->size, (int)log2f((float)t->size));
 
     printf("\n");
 
@@ -209,11 +209,6 @@ int main(int argc, char **argv)
 //===================================================================//
 // DEFINIZIONE FUNZIONI
 
-/**
- * @brief Alloca la memoria necessaria per la struttura dati del tipo rbtNode_t.
- * @param Value that the RBT node should contain.
- * @return Created RBT node.
- */
 rbtNode_t *createRbtNode(const int key)
 {
     rbtNode_t *new_rbt_node;
@@ -231,10 +226,7 @@ rbtNode_t *createRbtNode(const int key)
     return new_rbt_node;
 }
 
-/**
- * @brief Alloca la memoria necessaria per la struttura dati del tipo rbt_t.
- * @return Created RBT.
- */
+
 rbt_t *createRbt()
 {
     rbt_t *new_rbt;
@@ -256,24 +248,40 @@ rbt_t *createRbt()
     return new_rbt;
 }
 
-/**
- * @brief Left rotate operation.
- * @param The RBT.
- * @param The RBT node to rotate on.
- */
-void rbtLeftRotate(rbt_t *, rbtNode_t *);
-/**
- * @brief Right rotate operation.
- * @param The RBT.
- * @param The RBT node to rotate on.
- */
+
+void rbtLeftRotate(rbt_t *t, rbtNode_t *x) {
+    rbtNode_t *y;
+
+    /** y: figlio destro del nodo x*/
+    y = x->right;
+    /** figlio sx di y è il figlio sinistro di x */
+    x->right = y->left;
+
+    if (y->left != t->nil) {
+        y->left->parent = x;
+    }
+    
+    y->parent = x->parent;
+
+    if (x->parent == t->nil) {
+        t->root = y;
+    }
+    if ((x->parent != t->nil) &&  (x == x->parent->left)) {
+        x->parent->left = y;
+    }
+    if ((x->parent != t->nil) && (x == x->parent->right)) {
+        x->parent->right = y;
+    }
+
+    y->left = x;
+    x->parent = y;
+
+    return;
+}
+
 void rbtRightRotate(rbt_t *, rbtNode_t *);
 
-/**
- * @brief Inserimento di un nodo z nell'albero t.
- * @param The RBT.
- * @param The RBT node to be inserted.
- */
+
 void rbtInsert(rbt_t *t, rbtNode_t *z)
 {
 
@@ -330,11 +338,6 @@ void rbtInsert(rbt_t *t, rbtNode_t *z)
     return;
 }
 
-/**
- * @brief Sistema le relazioni padre e figlio destro ed eventuali sbilanciamenti dell'albero
- * @param t
- * @param z
-*/
 void rbtInsertFixupLeft(rbt_t *t, rbtNode_t *z)
 {
     /** y = Zio di z */
@@ -366,11 +369,7 @@ void rbtInsertFixupLeft(rbt_t *t, rbtNode_t *z)
     return; 
 }
 
-/**
- * @brief Sistema le relazioni padre e figlio sinistro ed eventuali sbilanciamenti dell'albero
- * @param t
- * @param z
-*/
+
 void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z)
 {
     /** y = Zio di z */
@@ -402,11 +401,7 @@ void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z)
     return; 
 }
 
-/**
- * @brief Sistema eventuali violazioni delle proprietà 2 e 4 dell'rbt.
- * @param t RBT the be fixed.
- * @param z initial RBT node to be fixed.
- */
+
 void rbtInsertFixup(rbt_t *t, rbtNode_t *z)
 {
     /** Finchè padre e figlio hanno colore rosso */
@@ -428,19 +423,9 @@ void rbtInsertFixup(rbt_t *t, rbtNode_t *z)
     return;
 }
 
-/**
- * @brief Search for a value in the RBT.
- * @param The RBT.
- * @param Value to be searched.
- * @return RBT node containing the value, if it exists; otherwise, NULL.
- */
+
 rbtNode_t *rbtSearch(rbt_t *, const int);
 
-/**
- * @brief Print RBT in order.
- * @param RBT to be printed.
- * @param RBT node to be printed.
- */
 void rbtInOrder(rbt_t *rbt, rbtNode_t *x) {
     if (x != rbt->nil) {
         rbtInOrder(rbt, x->left);
@@ -449,52 +434,16 @@ void rbtInOrder(rbt_t *rbt, rbtNode_t *x) {
     }
 }
 
-/**
- * @brief Test RBT implementation.
- * @return True if it is correct; otherwise, false.
- */
 bool rbtTest();
 
-/**
- * @brief Check if the tree is actually a RBT.
- * @param Tree to be checked.
- * @return True if it is; otherwise, false.
- */
 bool isRbt(rbt_t *);
 
-/**
- * @brief Function that checks if the tree has the BST property (i.e., x->left->value < x->value <= x->right->value, for all x).
- * @param Tree to be checked.
- * @return True if it is; otherwise, false.
- */
 bool rbtHasBstProperty(rbt_t *);
 
-/**
- * @brief Utility function for checking if the tree has the BST property.
- * @param Tree to be checked.
- * @param Current RBT node.
- * @param RBT test data structure.
- */
 void rbtHasBstPropertyUtil(rbt_t *, rbtNode_t *, rbtTestStructure_t *);
 
-/**
- * @brief Function that computes the black height of the RBT.
- * @param The RBT.
- * @param Current RBT node.
- * @return Black height if all paths have the same black height; otherwise, -1.
- */
 int rbtComputeBlackHeight(rbt_t *, rbtNode_t *);
 
-/**
- * @brief Free RBT nodes.
- * @param RBT whose nodes must be freed.
- * @param RBT node to be freed.
- */
 void rbtFreeNodes(rbt_t *, rbtNode_t *);
 
-/**
- * @brief Free RBT.
- * @param RBT to be freed.
- */
 void rbtFree(rbt_t *);
-

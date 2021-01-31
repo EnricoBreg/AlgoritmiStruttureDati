@@ -131,14 +131,8 @@ rbtNode_t *rbtIterSearch(rbt_t *t, const int value);
 void rbtInOrder(rbt_t *rbt, rbtNode_t *x);
 
 /**
- * @brief Test RBT implementation.
- * @return True if it is correct; otherwise, false.
- */
-bool rbtTest();
-
-/**
  * @brief Check if the tree is actually a RBT.
- * @param Tree to be checked.
+ * @param rbt to be checked.
  * @return True if it is; otherwise, false.
  */
 bool isRbt(rbt_t *);
@@ -185,6 +179,29 @@ void rbtFree(rbt_t *rbt);
  * @return true se ordinato, altrimenti false
 */
 bool rbtIsSorted(rbtTestStructure_t *teststr);
+
+/**
+ * @brief Check se la proprietà 1 degli RBT è rispettata: ogni nodo o è rosso o è nero
+ * @param rbt ptr all'RBT
+ * @param tnode ptr ad un nodo dell'RBT
+ * @return true se la proprietà è rispetta, false altrimenti
+*/
+bool rbtCheckProp_1(rbt_t *rbt, rbtNode_t *tnode);
+
+/**
+ * @brief Check se la proprietà 2 degli RBT è rispettata: la radice è nera
+ * @param rbt ptr all'RBT
+ * @return true se la proprietà è rispettata, false altrimenti
+*/
+bool rbtCheckProp_2(rbt_t *rbt);
+
+/**
+ * @brief Check se la proprietà #3 degli RBT è rispettata: tutte le foglie virtuali t.nil sono nere
+ * @param rbt puntatore all'RBT
+ * @param tnode node dell'RBT
+ * @return true se la proprità è rispettata, false altrimenti
+*/
+bool rbtCheckProp_3(rbt_t *rbt, rbtNode_t *tnode);
 
 //===================================================================//
 
@@ -542,15 +559,35 @@ void rbtInOrder(rbt_t *rbt, rbtNode_t *x) {
     }
 }
 
-bool rbtTest();
-
 bool isRbt(rbt_t *rbt) {
-    bool is_bst = false;
+    bool is_bst, prop1, prop2, prop3;
 
+    // Controllo delle proprietà generali deiìl BST
     if (!(is_bst = rbtHasBstProperty(rbt))) {
-        fprintf(stderr, "\nProprietà BST non rispettate!\n");
+        fprintf(stderr, "\nERRORE. Proprietà BST non rispettate!\n");
+        exit(EXIT_FAILURE);
     }
-
+    
+    // Controllo proprieta #1 dei BST
+    if (!(prop1 = rbtCheckProp_1(rbt, rbt->root))) {
+        fprintf(stderr, "\nERRORE. Proprietà RBT #1 non rispettata!\n");
+        exit(EXIT_FAILURE);
+    }
+    // Controllo proprieta #2 dei BST
+    if (!(prop2 = rbtCheckProp_2(rbt))) {
+        fprintf(stderr, "\nERRORE. Proprietà RBT #2 non rispettata!\n");
+        exit(EXIT_FAILURE);
+    }
+    // Controllo proprieta #3 dei BST
+    if (!(prop3 = rbtCheckProp_3(rbt, rbt->root))) {
+        fprintf(stderr, "ERRORE. Proprietà RBT #3 non rispettata!\n");
+        exit(EXIT_FAILURE);
+    }
+    // Controllo proprieta #4 dei BST
+    // ...
+    // Controllo proprieta #5 dei BST
+    // ...
+    
     return true;
 }
 
@@ -576,7 +613,7 @@ bool rbtHasBstProperty(rbt_t *rbt) {
 
 void rbtHasBstPropertyUtil(rbt_t *tree, rbtNode_t *tnode, rbtTestStructure_t *teststr) {
 
-    /** Visita in order, ma gli elementi li mette nell'array della struttura dati */
+    /** Visita InOrder, ma gli elementi li mette nell'array della struttura dati */
     if (tnode != tree->nil) {
         /** Mi richiamo sul sotto-albero sinistro */
         rbtHasBstPropertyUtil(tree, tnode->left, teststr);
@@ -594,7 +631,7 @@ void rbtHasBstPropertyUtil(rbt_t *tree, rbtNode_t *tnode, rbtTestStructure_t *te
 int rbtComputeBlackHeight(rbt_t *, rbtNode_t *);
 
 void rbtFreeNodes(rbt_t *rbt, rbtNode_t *tnode) {
-    // Ispirazione alla visita post oder, l'albero si elimina partendo dalle foglie
+    // Ispirazione alla visita PostOrder, l'albero si elimina partendo dalle foglie
     if (tnode != rbt->nil) {
         rbtFreeNodes(rbt, tnode->left);
         rbtFreeNodes(rbt, tnode->right);
@@ -615,6 +652,45 @@ bool rbtIsSorted(rbtTestStructure_t *teststr) {
 
     for(i = 0; i < teststr->index-1; i++) {
         if (teststr->A[i] < teststr->A[i++]) 
+            return false;
+    }
+    return true;
+}
+
+bool rbtCheckProp_1(rbt_t* rbt, rbtNode_t* tnode) {
+    //  Ispirato alla visita PreOrder
+    if (tnode != rbt->nil) {
+        if (tnode->color != 'R') {
+            if (tnode->color != 'B')
+                return false;
+        }
+        // Mi richiamo a sinistra
+        rbtCheckProp_1(rbt, tnode->left);
+        // Mi richiamo a destra
+        rbtCheckProp_1(rbt, tnode->right);
+    }
+
+    return true;
+}
+
+bool rbtCheckProp_2(rbt_t* rbt) {
+    if (rbt->root->color != 'B') {
+        return false;
+    }
+    return true;
+}
+
+bool rbtCheckProp_3(rbt_t* rbt, rbtNode_t *tnode) {
+    // Ispirata alla visita PostOrder
+    if (tnode != rbt->nil) {
+        // Mi richiamo a sinistra
+        rbtCheckProp_3(rbt, tnode->left);
+        // Mi richiamo a destra
+        rbtCheckProp_3(rbt, tnode->right);
+    }
+    
+    if (tnode == rbt->nil) {
+        if(tnode->color != 'B')
             return false;
     }
     return true;

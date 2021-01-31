@@ -5,7 +5,8 @@
 #include <string.h>
 #include <math.h>
 
-static unsigned int N_KEYS = 3;
+static unsigned int N_KEYS = 6;
+static unsigned int NIL_KEY_VALUE = -1;
 
 // DICHIARAZIONE TIPI DI DATO E PROTOTIPI FUNZIONI
 
@@ -174,8 +175,8 @@ int main(int argc, char **argv)
 {
 
     // int num = 18;
-    // int num_arr[] = {18, 17, 6, 20, 51, 40};
-    int num_arr[] =  {3,2,1};
+    int num_arr[] = {18, 17, 6, 20, 51, 40};
+    //int num_arr[] =  {3,2,1};
     unsigned int i;
     rbt_t *t;
     rbtNode_t *nodo;
@@ -198,10 +199,11 @@ int main(int argc, char **argv)
     // visita dell'albero
     printf("\nVisito l'albero...\n");
     rbtInOrder(t, t->root);
-
-    printf("\n\n\nh albero: log2(%d) = %d\n", t->size, (int)log2f((float)t->size));
-
     printf("\n");
+
+    //printf("\n\nh albero: log2(%d) = %d\n", t->size, (int)log2f((float)t->size));
+
+    //printf("\n");
 
 
     return 0;
@@ -242,6 +244,7 @@ rbt_t *createRbt()
     memset(t_nil, 0, sizeof(t_nil));
     /** foglia virtuale sempre di colore nero */
     t_nil->color = 'B';
+    t_nil->value = NIL_KEY_VALUE;
     /** Inizializzazione della dimensione a 0 */
     new_rbt->size = 0;
     new_rbt->nil = t_nil;

@@ -8,7 +8,7 @@
     #include <math.h>
 #endif
 
-static unsigned int N_KEYS = 6;
+static unsigned int N_KEYS = 3;
 static unsigned int NIL_KEY_VALUE = -1;
 
 // DICHIARAZIONE TIPI DI DATO E PROTOTIPI FUNZIONI
@@ -145,10 +145,10 @@ bool isRbt(rbt_t *);
 
 /**
  * @brief Function that checks if the tree has the BST property (i.e., x->left->value < x->value <= x->right->value, for all x).
- * @param Tree to be checked.
+ * @param rbt to be checked.
  * @return True if it is; otherwise, false.
  */
-bool rbtHasBstProperty(rbt_t *);
+bool rbtHasBstProperty(rbt_t *rbt);
 
 /**
  * @brief Utility function for checking if the tree has the BST property.
@@ -168,16 +168,23 @@ int rbtComputeBlackHeight(rbt_t *, rbtNode_t *);
 
 /**
  * @brief Free RBT nodes.
- * @param RBT whose nodes must be freed.
- * @param RBT node to be freed.
+ * @param rbt whose nodes must be freed.
+ * @param tnode node to be freed.
  */
-void rbtFreeNodes(rbt_t *, rbtNode_t *);
+void rbtFreeNodes(rbt_t *rbt, rbtNode_t *tnode);
 
 /**
  * @brief Free RBT.
  * @param RBT to be freed.
  */
-void rbtFree(rbt_t *);
+void rbtFree(rbt_t *rbt);
+
+/**
+ * @brief Check se l'array è ordinato in modo non decrescente
+ * @param ptr alla struttura dati rbtTestStruct
+ * @return true se ordinato, altrimenti false
+*/
+bool rbtIsSorted(rbtTestStructure_t *teststr);
 
 //===================================================================//
 
@@ -186,8 +193,8 @@ int main(int argc, char **argv)
 {
 
     int num = 41;
-    int num_arr[] = {18, 17, 6, 20, 51, 40};
-    //int num_arr[] =  {3,2,1};
+    //int num_arr[] = {18, 17, 6, 20, 51, 40};
+    int num_arr[] =  {3,2,1};
     unsigned int i;
     rbt_t *t;
     rbtNode_t *nodo;
@@ -234,6 +241,16 @@ int main(int argc, char **argv)
     printf("\n");
 #endif
 
+    // Controllo
+    isRbt(t);
+
+    // prova eliminazione di un nodo
+    printf("Eliminazione dell'albero...\n");
+    rbtFreeNodes(t, t->root);
+    rbtFree(t);
+
+
+    printf("\nBYE!\n\n");
     return 0;
 }
 // FINE MAIN
@@ -429,7 +446,6 @@ void rbtInsertFixupLeft(rbt_t *t, rbtNode_t *z)
     return; 
 }
 
-
 void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z)
 {
     /** y = Zio di z */
@@ -468,13 +484,9 @@ void rbtInsertFixup(rbt_t *t, rbtNode_t *z)
     {
         /** Se il padre di z e figlio sx di suo padre */
         if (z->parent->parent->left == z->parent)
-        {
             rbtInsertFixupLeft(t, z);
-        }
         else
-        {
             rbtInsertFixupRight(t, z);
-        }
     }
     /** Sistemo l'eventuale violazione della proprietà 2 */
     t->root->color = 'B';
@@ -532,14 +544,78 @@ void rbtInOrder(rbt_t *rbt, rbtNode_t *x) {
 
 bool rbtTest();
 
-bool isRbt(rbt_t *);
+bool isRbt(rbt_t *rbt) {
+    bool is_bst = false;
 
-bool rbtHasBstProperty(rbt_t *);
+    if (!(is_bst = rbtHasBstProperty(rbt))) {
+        fprintf(stderr, "\nProprietà BST non rispettate!\n");
+    }
 
-void rbtHasBstPropertyUtil(rbt_t *, rbtNode_t *, rbtTestStructure_t *);
+    return true;
+}
+
+bool rbtHasBstProperty(rbt_t *rbt) {
+    bool is_bst = false;
+    rbtTestStructure_t *teststr = NULL;
+
+    teststr = (rbtTestStructure_t*)malloc(sizeof(rbtTestStructure_t));
+    teststr->A = (int*)malloc(sizeof(int)*rbt->size);
+    teststr->index = 0;
+
+    rbtHasBstPropertyUtil(rbt, rbt->root, teststr);
+
+    is_bst = rbtIsSorted(teststr);
+
+    if (is_bst) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void rbtHasBstPropertyUtil(rbt_t *tree, rbtNode_t *tnode, rbtTestStructure_t *teststr) {
+
+    /** Visita in order, ma gli elementi li mette nell'array della struttura dati */
+    if (tnode != tree->nil) {
+        /** Mi richiamo sul sotto-albero sinistro */
+        rbtHasBstPropertyUtil(tree, tnode->left, teststr);
+        /** Copio l'elemento nell'indice */
+        teststr->A[teststr->index] = tnode->value;
+        /** Incremento l'indice dell'array */
+        teststr->index += 1;
+        /** Mi richiamo a destra */
+        rbtHasBstPropertyUtil(tree, tnode->right, teststr);
+    }
+
+    return;
+}
 
 int rbtComputeBlackHeight(rbt_t *, rbtNode_t *);
 
-void rbtFreeNodes(rbt_t *, rbtNode_t *);
+void rbtFreeNodes(rbt_t *rbt, rbtNode_t *tnode) {
+    // Ispirazione alla visita post oder, l'albero si elimina partendo dalle foglie
+    if (tnode != rbt->nil) {
+        rbtFreeNodes(rbt, tnode->left);
+        rbtFreeNodes(rbt, tnode->right);
+        free(tnode);
+        rbt->size -= 1;
+    }
+    return;
+}
 
-void rbtFree(rbt_t *);
+void rbtFree(rbt_t *rbt) {
+    free(rbt->nil);
+    free(rbt);
+    return;
+}
+
+bool rbtIsSorted(rbtTestStructure_t *teststr) {
+    unsigned int i;
+
+    for(i = 0; i < teststr->index-1; i++) {
+        if (teststr->A[i] < teststr->A[i++]) 
+            return false;
+    }
+    return true;
+}

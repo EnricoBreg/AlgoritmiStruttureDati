@@ -1,9 +1,12 @@
+//#define USE_MATH_H
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <math.h>
+#ifdef USE_MATH_H
+    #include <math.h>
+#endif
 
 static unsigned int N_KEYS = 6;
 static unsigned int NIL_KEY_VALUE = -1;
@@ -105,11 +108,12 @@ void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z);
 
 /**
  * @brief Search for a value in the RBT.
- * @param The RBT.
- * @param Value to be searched.
+ * @param t puntatore alla struttura rbt_t.
+ * @param t_rdx puntatore alla radice dell'albero
+ * @param value to be searched.
  * @return RBT node containing the value, if it exists; otherwise, NULL.
  */
-rbtNode_t *rbtSearch(rbt_t *, const int);
+rbtNode_t *rbtSearch(rbt_t *t, rbtNode_t *t_rdx, const int value);
 
 /**
  * @brief Print RBT in order.
@@ -174,7 +178,7 @@ void rbtFree(rbt_t *);
 int main(int argc, char **argv)
 {
 
-    // int num = 18;
+    int num = 18;
     int num_arr[] = {18, 17, 6, 20, 51, 40};
     //int num_arr[] =  {3,2,1};
     unsigned int i;
@@ -201,10 +205,18 @@ int main(int argc, char **argv)
     rbtInOrder(t, t->root);
     printf("\n");
 
-    //printf("\n\nh albero: log2(%d) = %d\n", t->size, (int)log2f((float)t->size));
+    // Prova ricerva di una chiave
+    rbtNode_t* searched_node = rbtSearch(t, t->root, num);
+    if (searched_node == t->nil) {
+        printf("\nLa chiave cercata non esiste nell'RBT\n");
+    } else {
+        printf("\nIl nodo cercato esiste\n");
+    }
 
-    //printf("\n");
-
+#ifdef USE_MATH_H
+    printf("\n\nh albero: log2(%d) = %d\n", t->size, (int)log2f((float)t->size));
+    printf("\n");
+#endif
 
     return 0;
 }
@@ -435,7 +447,6 @@ void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z)
     return; 
 }
 
-
 void rbtInsertFixup(rbt_t *t, rbtNode_t *z)
 {
     /** Finchè padre e figlio hanno colore rosso */
@@ -457,8 +468,21 @@ void rbtInsertFixup(rbt_t *t, rbtNode_t *z)
     return;
 }
 
-
-rbtNode_t *rbtSearch(rbt_t *, const int);
+rbtNode_t *rbtSearch(rbt_t *t, rbtNode_t *t_rdx, const int value) {
+    /** Controllo che la radice non sia nil oppure che 
+     *  la chiave cercata sia la chiave della radice
+    */
+    if ((t_rdx == t->nil) || (t_rdx->value == value)) {
+        return t_rdx;
+    }
+    /** Scorro l'albero in cerca della chiave */
+    if (value < t_rdx->value)
+        /** La chiave è nel sotto-albero sx*/
+        return rbtSearch(t, t_rdx->left, value);
+    else 
+        /** La chiave è nel sotto-albero dx */
+        return rbtSearch(t, t_rdx->right, value);
+}
 
 void rbtInOrder(rbt_t *rbt, rbtNode_t *x) {
     if (x != rbt->nil) {

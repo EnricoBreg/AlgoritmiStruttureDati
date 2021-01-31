@@ -107,20 +107,28 @@ void rbtInsertFixupLeft(rbt_t *t, rbtNode_t *z);
 void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z);
 
 /**
- * @brief Search for a value in the RBT.
+ * @brief Search recursively for a value in the RBT.
  * @param t puntatore alla struttura rbt_t.
  * @param t_rdx puntatore alla radice dell'albero
  * @param value to be searched.
  * @return RBT node containing the value, if it exists; otherwise, NULL.
  */
-rbtNode_t *rbtSearch(rbt_t *t, rbtNode_t *t_rdx, const int value);
+rbtNode_t *rbtRecuSearch(rbt_t *t, rbtNode_t *t_rdx, const int value);
+
+/**
+ * @brief Search iteratively for a value in the RBT.
+ * @param t puntatore alla struttura rbt_t
+ * @param value to be searched.
+ * @return RBT node containing the value, if it exists; otherwise, NULL.
+ */
+rbtNode_t *rbtIterSearch(rbt_t *t, const int value);
 
 /**
  * @brief Print RBT in order.
  * @param RBT to be printed.
  * @param RBT node to be printed.
  */
-void rbtInOrder(rbt_t *, rbtNode_t *);
+void rbtInOrder(rbt_t *rbt, rbtNode_t *x);
 
 /**
  * @brief Test RBT implementation.
@@ -171,14 +179,13 @@ void rbtFreeNodes(rbt_t *, rbtNode_t *);
  */
 void rbtFree(rbt_t *);
 
-
 //===================================================================//
 
 // MAIN 
 int main(int argc, char **argv)
 {
 
-    int num = 18;
+    int num = 41;
     int num_arr[] = {18, 17, 6, 20, 51, 40};
     //int num_arr[] =  {3,2,1};
     unsigned int i;
@@ -205,13 +212,22 @@ int main(int argc, char **argv)
     rbtInOrder(t, t->root);
     printf("\n");
 
-    // Prova ricerva di una chiave
-    rbtNode_t* searched_node = rbtSearch(t, t->root, num);
+    // Prova ricerva ricorsiva di una chiave
+    rbtNode_t* searched_node = rbtRecuSearch(t, t->root, num);
     if (searched_node == t->nil) {
         printf("\nLa chiave cercata non esiste nell'RBT\n");
     } else {
         printf("\nIl nodo cercato esiste\n");
     }
+
+    // Prova ricerva iterativa
+    searched_node = rbtIterSearch(t, num);
+    if (searched_node == t->nil) {
+        printf("\nLa chiave cercata non esiste nell'RBT\n");
+    } else {
+        printf("\nIl nodo cercato esiste\n");
+    }
+
 
 #ifdef USE_MATH_H
     printf("\n\nh albero: log2(%d) = %d\n", t->size, (int)log2f((float)t->size));
@@ -468,7 +484,7 @@ void rbtInsertFixup(rbt_t *t, rbtNode_t *z)
     return;
 }
 
-rbtNode_t *rbtSearch(rbt_t *t, rbtNode_t *t_rdx, const int value) {
+rbtNode_t *rbtRecuSearch(rbt_t *t, rbtNode_t *t_rdx, const int value) {
     /** Controllo che la radice non sia nil oppure che 
      *  la chiave cercata sia la chiave della radice
     */
@@ -478,10 +494,34 @@ rbtNode_t *rbtSearch(rbt_t *t, rbtNode_t *t_rdx, const int value) {
     /** Scorro l'albero in cerca della chiave */
     if (value < t_rdx->value)
         /** La chiave è nel sotto-albero sx*/
-        return rbtSearch(t, t_rdx->left, value);
+        return rbtRecuSearch(t, t_rdx->left, value);
     else 
         /** La chiave è nel sotto-albero dx */
-        return rbtSearch(t, t_rdx->right, value);
+        return rbtRecuSearch(t, t_rdx->right, value);
+}
+
+rbtNode_t *rbtIterSearch(rbt_t *t, const int value) {
+    rbtNode_t *aux;
+
+    /** Controllo la radice */
+    if ((t->root == t->nil) || (t->root->value == value)) {
+        return t->root;
+    }
+
+    aux = t->root;
+    /** Scorro l'albero */
+    while (aux != t->nil) {
+        if (value < aux->value)
+            /** Vado a sinistra */
+            aux = aux->left;
+        else
+            aux = aux->right;
+        
+        if (aux->value == value) 
+            return aux;   
+    }
+    
+    return aux;
 }
 
 void rbtInOrder(rbt_t *rbt, rbtNode_t *x) {

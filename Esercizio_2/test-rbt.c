@@ -239,7 +239,7 @@ int main(int argc, char **argv)
 // FINE MAIN
 
 
-//===================================================================//
+// =================================================================== //
 // DEFINIZIONE FUNZIONI
 
 rbtNode_t *createRbtNode(const int key)
@@ -268,11 +268,9 @@ rbt_t *createRbt()
     /** Allocazione memoria necessaria */
     new_rbt = (rbt_t *)malloc(sizeof(rbt_t));
     /** nodo T.nil */
-    t_nil = (rbtNode_t *)malloc(sizeof(rbtNode_t));
-    memset(t_nil, 0, sizeof(t_nil));
+    t_nil = createRbtNode(NIL_KEY_VALUE);
     /** foglia virtuale sempre di colore nero */
     t_nil->color = 'B';
-    t_nil->value = NIL_KEY_VALUE;
     /** Inizializzazione della dimensione a 0 */
     new_rbt->size = 0;
     new_rbt->nil = t_nil;

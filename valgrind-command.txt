@@ -5,6 +5,7 @@ di memory leaking
 gcc -g my_executable.c -o my_executable -std=c18 -Wall -Werror -ggdb3
 
 Fatto questo, eseguire da terminare il programma ./my_executable
+
 valgrind --leak-check=full \
          --show-leak-kinds=all \
          --track-origins=yes \

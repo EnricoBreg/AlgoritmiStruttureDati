@@ -298,7 +298,7 @@ rbtNode_t *createRbtNode(const int key)
     /** Allocazione della memoria necessaria per new_rbt_node */
     new_rbt_node = (rbtNode_t *)malloc(sizeof(rbtNode_t));
     /** Inizializzazione dei campi della struttura */
-    memset(new_rbt_node, 0, sizeof(new_rbt_node));
+    memset(new_rbt_node, 0, sizeof(rbtNode_t));
     /** Ogni nuovo nodo inserito nell'albero ha colore RED */
     new_rbt_node->color = 'R';
     /** Assegnazione della chiave al nodo */
@@ -624,6 +624,10 @@ bool rbtHasBstProperty(rbt_t *rbt) {
 
     is_bst = rbtIsSorted(teststr);
 
+    // Libero la memoria allocata
+    free(teststr->A);
+    free(teststr);
+
     if (is_bst) {
         return true;
     }
@@ -692,7 +696,7 @@ void rbtFree(rbt_t *rbt) {
 }
 
 bool rbtIsSorted(rbtTestStructure_t *teststr) {
-    unsigned int i;
+    unsigned int i = 0;
 
     for(i = 0; i < teststr->index-1; i++) {
         if (teststr->A[i] < teststr->A[i++]) 

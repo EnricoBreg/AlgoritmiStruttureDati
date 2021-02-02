@@ -374,6 +374,8 @@ void hashtableFree(hashtable_t *hashtbl)
         /** Libero la memoria della i-esima entry */
         free(hashtbl->entry[i]);
     }
+    /** Deallocazione del puntatore all'array */
+    free(hashtbl->entry);
     /** Una volta terminata la deallocazione di tutte le liste 
          * posso deallocare anche l'array dinamico delle entry della tabella hash */
     free(hashtbl);

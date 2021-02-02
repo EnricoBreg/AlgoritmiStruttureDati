@@ -309,7 +309,7 @@ rbtNode_t *createRbtNode(const int key)
 }
 
 
-rbt_t *createRbt()
+rbt_t *createRbt(void)
 {
     rbt_t *new_rbt;
     rbtNode_t *t_nil;

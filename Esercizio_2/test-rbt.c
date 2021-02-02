@@ -8,7 +8,7 @@
     #include <math.h>
 #endif
 
-static unsigned int N_KEYS = 3;
+static unsigned int N_KEYS = 6;
 static unsigned int NIL_KEY_VALUE = -1;
 
 // DICHIARAZIONE TIPI DI DATO E PROTOTIPI FUNZIONI
@@ -203,18 +203,34 @@ bool rbtCheckProp_2(rbt_t *rbt);
 */
 bool rbtCheckProp_3(rbt_t *rbt, rbtNode_t *tnode);
 
+/**
+ * @brief Check se la proprietà #4 degli RBT è rispettata: se un nodo è rosso entrambi i suoi figli sono neri.
+ * @param rbt ptr all'RBT
+ * @return true se la proprietà è verificata, false altrimenti
+*/
+bool rbtCheckProp_4(rbt_t *rbt, rbtNode_t *tnode);
+
+/**
+ * @brief Check se la proprietà #5 degli RBT è rispettata: per ogni cammino semplice dalla radice alle foglie, 
+ *        il numero di nodi neri e lo stesso
+ * @param rbt puntatore all'RBT
+ * @param tnode puntatore ad una struttura rbtNode_t
+ * @return true se la proprietà è verificata, false altrimenti
+*/
+bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode);
+
 //===================================================================//
 
 // MAIN 
 int main(int argc, char **argv)
 {
 
-    int num = 41;
-    //int num_arr[] = {18, 17, 6, 20, 51, 40};
-    int num_arr[] =  {3,2,1};
+    int num = 3;
+    int num_arr[] = {18, 17, 6, 20, 51, 40};
+    //int num_arr[] =  {3,2,1};
     unsigned int i;
     rbt_t *t;
-    rbtNode_t *nodo;
+    rbtNode_t *nodo, *searched_node;
 
     //printf("\nInserimento %d nell'albero...\n");
     t = createRbt();
@@ -237,35 +253,34 @@ int main(int argc, char **argv)
     printf("\n");
 
     // Prova ricerva ricorsiva di una chiave
-    rbtNode_t* searched_node = rbtRecuSearch(t, t->root, num);
+    printf("\nProva ricerca RICORSIVA sull'albero...\n");
+    searched_node = rbtRecuSearch(t, t->root, num);
     if (searched_node == t->nil) {
-        printf("\nLa chiave cercata non esiste nell'RBT\n");
+        printf("La chiave cercata non esiste nell'RBT\n");
     } else {
-        printf("\nIl nodo cercato esiste\n");
+        printf("La chiave cercata esiste\n");
     }
 
     // Prova ricerva iterativa
+    printf("\nProva ricerca ITERATIVA sull'albero...\n");
     searched_node = rbtIterSearch(t, num);
     if (searched_node == t->nil) {
-        printf("\nLa chiave cercata non esiste nell'RBT\n");
+        printf("La chiave cercata non esiste nell'RBT\n");
     } else {
-        printf("\nIl nodo cercato esiste\n");
+        printf("La chiave cercata esiste\n");
     }
-
-
-#ifdef USE_MATH_H
-    printf("\n\nh albero: log2(%d) = %d\n", t->size, (int)log2f((float)t->size));
-    printf("\n");
-#endif
 
     // Controllo
     isRbt(t);
 
+    printf("\n");
+    printf("Altezza nera dell'albero: %d", rbtComputeBlackHeight(t, t->root));
+    printf("\n");
+
     // prova eliminazione di un nodo
-    printf("Eliminazione dell'albero...\n");
+    printf("\nEliminazione dell'albero...\n");
     rbtFreeNodes(t, t->root);
     rbtFree(t);
-
 
     printf("\nBYE!\n\n");
     return 0;
@@ -560,7 +575,7 @@ void rbtInOrder(rbt_t *rbt, rbtNode_t *x) {
 }
 
 bool isRbt(rbt_t *rbt) {
-    bool is_bst, prop1, prop2, prop3;
+    bool is_bst, prop1, prop2, prop3, prop4, prop5;
 
     // Controllo delle proprietà generali deiìl BST
     if (!(is_bst = rbtHasBstProperty(rbt))) {
@@ -584,9 +599,15 @@ bool isRbt(rbt_t *rbt) {
         exit(EXIT_FAILURE);
     }
     // Controllo proprieta #4 dei BST
-    // ...
+    if (!(prop4 = rbtCheckProp_4(rbt, rbt->root))) {
+        fprintf(stderr, "ERRORE. Proprietà RBT #4 non rispettata!\n");
+        exit(EXIT_FAILURE);
+    }
     // Controllo proprieta #5 dei BST
-    // ...
+    if (!(prop5 = rbtCheckProp_5(rbt, rbt->root))) {
+        fprintf(stderr, "ERRORE. Proprietà RBT #5 non rispettata!\n");
+        exit(EXIT_FAILURE);
+    }
     
     return true;
 }
@@ -628,7 +649,30 @@ void rbtHasBstPropertyUtil(rbt_t *tree, rbtNode_t *tnode, rbtTestStructure_t *te
     return;
 }
 
-int rbtComputeBlackHeight(rbt_t *, rbtNode_t *);
+int rbtComputeBlackHeight(rbt_t *rbt, rbtNode_t *tnode) {
+    int left_bh, right_bh;
+    left_bh = right_bh = 0;
+
+    if (tnode == rbt->nil) // Controllo se sono arrivato alla foglia virtuale
+        return 0;
+
+    left_bh = rbtComputeBlackHeight(rbt, tnode->left);
+    right_bh = rbtComputeBlackHeight(rbt, tnode->right);
+    if (left_bh == -1) 
+        return left_bh;
+    if (right_bh == -1) 
+        return right_bh;
+
+    if (left_bh != right_bh) {
+        return -1;
+    } else {
+        if (tnode->color == 'B') // Se il nodo è nero 
+            return left_bh + 1;  // Aggiungo uno al contatore perchè il nodo corrente è nero
+        else   
+            return left_bh;      // Caso in cui il nodo corrente non sia nero, non si incrementa il contatore
+    }
+
+}
 
 void rbtFreeNodes(rbt_t *rbt, rbtNode_t *tnode) {
     // Ispirazione alla visita PostOrder, l'albero si elimina partendo dalle foglie
@@ -657,7 +701,7 @@ bool rbtIsSorted(rbtTestStructure_t *teststr) {
     return true;
 }
 
-bool rbtCheckProp_1(rbt_t* rbt, rbtNode_t* tnode) {
+bool rbtCheckProp_1(rbt_t *rbt, rbtNode_t *tnode) {
     //  Ispirato alla visita PreOrder
     if (tnode != rbt->nil) {
         if (tnode->color != 'R') {
@@ -673,14 +717,14 @@ bool rbtCheckProp_1(rbt_t* rbt, rbtNode_t* tnode) {
     return true;
 }
 
-bool rbtCheckProp_2(rbt_t* rbt) {
+bool rbtCheckProp_2(rbt_t *rbt) {
     if (rbt->root->color != 'B') {
         return false;
     }
     return true;
 }
 
-bool rbtCheckProp_3(rbt_t* rbt, rbtNode_t *tnode) {
+bool rbtCheckProp_3(rbt_t *rbt, rbtNode_t *tnode) {
     // Ispirata alla visita PostOrder
     if (tnode != rbt->nil) {
         // Mi richiamo a sinistra
@@ -693,5 +737,32 @@ bool rbtCheckProp_3(rbt_t* rbt, rbtNode_t *tnode) {
         if(tnode->color != 'B')
             return false;
     }
+    return true;
+}
+
+bool rbtCheckProp_4(rbt_t *rbt, rbtNode_t *tnode) {
+    if (tnode != rbt->nil) {
+        if (tnode->color == 'R') {
+            if (tnode->left->color != 'B' || tnode->right->color != 'B') {
+                return false;
+            }
+        }
+        // Mi richiamo sul sotto-albero sx
+        rbtCheckProp_4(rbt, tnode->left);
+        // Mi richiamo sul sotto-albero dx
+        rbtCheckProp_4(rbt, tnode->right);
+    }
+    return true;
+}
+
+bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode) {
+    int retval;
+    if ((retval = rbtComputeBlackHeight(rbt, rbt->root)) == -1) {
+        /** rbtComputeBlackHeight restituisce -1 in caso di fallimento, 
+         *  => proprietà non rispettata, ritorno false 
+        */
+        return false;
+    }
+    // Altrimenti ritorno true
     return true;
 }

@@ -3,9 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-// -------------- Variables -------------- //
-static unsigned int NIL_KEY_VALUE = -1;
-
 // -------------- Linked List -------------- //
 typedef struct linkedListNode_t
 {
@@ -289,7 +286,7 @@ void rbtInOrder(rbt_t *rbt, rbtNode_t *x);
  * @param rbt to be checked.
  * @return True if it is; otherwise, false.
  */
-bool isRbt(rbt_t *);
+bool isRbt(rbt_t *rbt);
 
 /**
  * @brief Function that checks if the tree has the BST property (i.e., x->left->value < x->value <= x->right->value, for all x).
@@ -372,5 +369,13 @@ bool rbtCheckProp_4(rbt_t *rbt, rbtNode_t *tnode);
  * @return true se la proprietà è verificata, false altrimenti
 */
 bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode);
+
+/**
+ * @brief Test RBT if it is correctly implemented.
+ * @return True if it is correct; otherwise, false.
+ */
+bool rbtTest() {
+    return;
+}
 
 //===================================================================//

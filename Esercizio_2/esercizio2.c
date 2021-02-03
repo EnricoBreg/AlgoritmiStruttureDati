@@ -307,7 +307,7 @@ rbt_t *createRbt(void)
     /** Allocazione memoria necessaria */
     new_rbt = (rbt_t *)malloc(sizeof(rbt_t));
     /** nodo T.nil */
-    t_nil = createRbtNode(NIL_KEY_VALUE);
+    t_nil = createRbtNode(0);
     /** foglia virtuale sempre di colore nero */
     t_nil->color = 'B';
     /** Inizializzazione della dimensione a 0 */
@@ -593,41 +593,27 @@ bool isRbt(rbt_t *rbt)
 
     // Controllo delle proprietà generali deiìl BST
     if (!(is_bst = rbtHasBstProperty(rbt)))
-    {
-        fprintf(stderr, "\nERRORE. Proprietà BST non rispettate!\n");
-        exit(EXIT_FAILURE);
-    }
+        return false;
 
     // Controllo proprieta #1 dei BST
     if (!(prop1 = rbtCheckProp_1(rbt, rbt->root)))
-    {
-        fprintf(stderr, "\nERRORE. Proprietà RBT #1 non rispettata!\n");
-        exit(EXIT_FAILURE);
-    }
+        return false;
+
     // Controllo proprieta #2 dei BST
     if (!(prop2 = rbtCheckProp_2(rbt)))
-    {
-        fprintf(stderr, "\nERRORE. Proprietà RBT #2 non rispettata!\n");
-        exit(EXIT_FAILURE);
-    }
+        return false;
+    
     // Controllo proprieta #3 dei BST
     if (!(prop3 = rbtCheckProp_3(rbt, rbt->root)))
-    {
-        fprintf(stderr, "ERRORE. Proprietà RBT #3 non rispettata!\n");
-        exit(EXIT_FAILURE);
-    }
+        return false;
+    
     // Controllo proprieta #4 dei BST
     if (!(prop4 = rbtCheckProp_4(rbt, rbt->root)))
-    {
-        fprintf(stderr, "ERRORE. Proprietà RBT #4 non rispettata!\n");
-        exit(EXIT_FAILURE);
-    }
+        return false;
+    
     // Controllo proprieta #5 dei BST
     if (!(prop5 = rbtCheckProp_5(rbt, rbt->root)))
-    {
-        fprintf(stderr, "ERRORE. Proprietà RBT #5 non rispettata!\n");
-        exit(EXIT_FAILURE);
-    }
+        return false;
 
     return true;
 }
@@ -816,4 +802,12 @@ bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode)
     }
     // Altrimenti ritorno true
     return true;
+}
+
+/**
+ * @brief Test RBT if it is correctly implemented.
+ * @return True if it is correct; otherwise, false.
+ */
+bool rbtTest() {
+    return;
 }

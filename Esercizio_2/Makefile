@@ -31,4 +31,4 @@ clean:
 	@rm -rf $(TARGETS) *.zip *.o results.txt
 
 dist:
-	@zip -9 $(ARCHIVE) $(SOURCES) *.pdf *.jpg *.jpeg Makefile
+	@zip -9 $(ARCHIVE) $(SOURCES) *.pdf *.jpg *.jpeg *.png README.txt Makefile

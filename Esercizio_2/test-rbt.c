@@ -8,8 +8,10 @@
     #include <math.h>
 #endif
 
-static unsigned int N_KEYS = 6;
-static unsigned int NIL_KEY_VALUE = -1;
+const unsigned int N_KEYS = 10;
+const unsigned int NIL_KEY_VALUE = 0;
+const unsigned int SEED = 18;
+const unsigned int MAX_RANDOM_NUMBER = 20;
 
 // DICHIARAZIONE TIPI DI DATO E PROTOTIPI FUNZIONI
 
@@ -124,6 +126,22 @@ rbtNode_t *rbtRecuSearch(rbt_t *t, rbtNode_t *t_rdx, const int value);
 rbtNode_t *rbtIterSearch(rbt_t *t, const int value);
 
 /**
+ * @brief Ricerca del massimo 
+ * @param rbt puntatore a rbt
+ * @param node puntatore ad un nodo rbt
+ * @return nodoo con la chiave massima
+ */
+rbtNode_t *rbtMaximum(rbt_t *rbt, rbtNode_t *tnode);
+
+/**
+ * @brief Ricerca del minimo 
+ * @param rbt puntatore a rbt
+ * @param node puntatore ad un nodo rbt
+ * @return nodoo con la chiave minore
+ */
+rbtNode_t *rbtMinimum(rbt_t *rbt, rbtNode_t *tnode);
+
+/**
  * @brief Print RBT in order.
  * @param RBT to be printed.
  * @param RBT node to be printed.
@@ -221,17 +239,36 @@ bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode);
 
 //===================================================================//
 
+
+void generateRandomArray(int *a, const int n) {
+    unsigned int i;
+    for (i = 0; i < n; i++) {
+        a[i] = 1 + rand() % MAX_RANDOM_NUMBER;
+    }
+
+    return;
+}
+
 // MAIN 
 int main(int argc, char **argv)
 {
 
     int num = 3;
-    int num_arr[] = {18, 17, 6, 20, 51, 40};
+    int *num_arr = NULL;
+    //int num_arr[] = {18, 17, 6, 20, 51, 40};
     //int num_arr[] =  {3,2,1};
     unsigned int i;
     rbt_t *t;
-    rbtNode_t *nodo, *searched_node;
+    rbtNode_t *nodo = NULL, *searched_node = NULL, *min = NULL, *max = NULL;
 
+    srand(SEED);
+
+    num_arr = (int*)malloc(sizeof(int)*N_KEYS);
+    generateRandomArray(num_arr, N_KEYS);
+    printf("\nRandom array:\n| ");
+    for (i = 0; i < N_KEYS; i++)
+        printf("%d | ", num_arr[i]);
+    
     //printf("\nInserimento %d nell'albero...\n");
     t = createRbt();
 
@@ -270,12 +307,21 @@ int main(int argc, char **argv)
         printf("La chiave cercata esiste\n");
     }
 
-    // Controllo
-    isRbt(t);
-
+    printf("\nRicerca minimo e massimo...\n");
+    min = rbtMinimum(t, t->root);
+    max = rbtMaximum(t, t->root);
+    printf("\tMIN: %d\n", min->value);
+    printf("\tMAX: %d\n", max->value);
+        
     printf("\n");
     printf("Altezza nera dell'albero: %d", rbtComputeBlackHeight(t, t->root));
     printf("\n");
+    
+    // Controllo
+    if (isRbt(t) == false) {
+        fprintf(stderr, "ERRORE. L'albero non è un RBT\n");
+        exit(EXIT_FAILURE);
+    }
 
     // prova eliminazione di un nodo
     printf("\nEliminazione dell'albero...\n");
@@ -580,33 +626,33 @@ bool isRbt(rbt_t *rbt) {
     // Controllo delle proprietà generali deiìl BST
     if (!(is_bst = rbtHasBstProperty(rbt))) {
         fprintf(stderr, "\nERRORE. Proprietà BST non rispettate!\n");
-        exit(EXIT_FAILURE);
+        return false;
     }
     
     // Controllo proprieta #1 dei BST
     if (!(prop1 = rbtCheckProp_1(rbt, rbt->root))) {
         fprintf(stderr, "\nERRORE. Proprietà RBT #1 non rispettata!\n");
-        exit(EXIT_FAILURE);
+        return false;
     }
     // Controllo proprieta #2 dei BST
     if (!(prop2 = rbtCheckProp_2(rbt))) {
         fprintf(stderr, "\nERRORE. Proprietà RBT #2 non rispettata!\n");
-        exit(EXIT_FAILURE);
+        return false;
     }
     // Controllo proprieta #3 dei BST
     if (!(prop3 = rbtCheckProp_3(rbt, rbt->root))) {
         fprintf(stderr, "ERRORE. Proprietà RBT #3 non rispettata!\n");
-        exit(EXIT_FAILURE);
+        return false;
     }
     // Controllo proprieta #4 dei BST
     if (!(prop4 = rbtCheckProp_4(rbt, rbt->root))) {
         fprintf(stderr, "ERRORE. Proprietà RBT #4 non rispettata!\n");
-        exit(EXIT_FAILURE);
+        return false;
     }
     // Controllo proprieta #5 dei BST
     if (!(prop5 = rbtCheckProp_5(rbt, rbt->root))) {
         fprintf(stderr, "ERRORE. Proprietà RBT #5 non rispettata!\n");
-        exit(EXIT_FAILURE);
+        return false;
     }
     
     return true;
@@ -769,4 +815,18 @@ bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode) {
     }
     // Altrimenti ritorno true
     return true;
+}
+
+rbtNode_t *rbtMaximum(rbt_t *rbt, rbtNode_t *tnode) {
+    if (tnode->right == rbt->nil) 
+        return tnode;
+
+    return rbtMaximum(rbt, tnode->right); // Il massimo si trova nel sotto-albero dx
+}
+
+rbtNode_t *rbtMinimum(rbt_t *rbt, rbtNode_t *tnode) {
+    if (tnode->left == rbt->nil) 
+        return tnode;
+
+    return rbtMinimum(rbt, tnode->left); // Il minimo si trova nel sotto-albero sx
 }

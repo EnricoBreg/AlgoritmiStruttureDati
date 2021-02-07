@@ -229,7 +229,7 @@ void hashtablePrint(hashtable_t *hashtbl)
     }
 }
 
-bool hashtableTest(hashtable_t *hashtbl)
+bool isHashTable(hashtable_t *hashtbl)
 {
     unsigned int i;
     int hashfvalue;
@@ -674,13 +674,9 @@ int rbtComputeBlackHeight(rbt_t *rbt, rbtNode_t *tnode)
 
     left_bh = rbtComputeBlackHeight(rbt, tnode->left);
     right_bh = rbtComputeBlackHeight(rbt, tnode->right);
-    if (left_bh == -1)
+    if (left_bh == -1 || right_bh == -1)
         return left_bh;
-    if (right_bh == -1)
-        return right_bh;
-
-    if (left_bh != right_bh)
-    {
+    if (left_bh != right_bh) {
         return -1;
     }
     else
@@ -707,6 +703,7 @@ void rbtFreeNodes(rbt_t *rbt, rbtNode_t *tnode)
 
 void rbtFree(rbt_t *rbt)
 {
+    rbtFreeNodes(rbt, rbt->root);
     free(rbt->nil);
     free(rbt);
     return;
@@ -804,10 +801,16 @@ bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode)
     return true;
 }
 
-/**
- * @brief Test RBT if it is correctly implemented.
- * @return True if it is correct; otherwise, false.
- */
-bool rbtTest() {
-    return;
+rbtNode_t *rbtMaximum(rbt_t *rbt, rbtNode_t *tnode) {
+    if (tnode->right == rbt->nil) 
+        return tnode;
+
+    return rbtMaximum(rbt, tnode->right); // Il massimo si trova nel sotto-albero dx
+}
+
+rbtNode_t *rbtMinimum(rbt_t *rbt, rbtNode_t *tnode) {
+    if (tnode->left == rbt->nil) 
+        return tnode;
+
+    return rbtMinimum(rbt, tnode->left); // Il minimo si trova nel sotto-albero sx
 }

@@ -196,7 +196,7 @@ void hashtablePrint(hashtable_t *hashtbl);
  * @brief Test hashtable if it is correctly implemented.
  * @return True if it is correct; otherwise, false.
  */
-bool hashtableTest(hashtable_t *hashtbl);
+bool isHashTable(hashtable_t *hashtbl);
 
 /**
  * @brief Free hashtable.
@@ -256,6 +256,22 @@ void rbtInsertFixupLeft(rbt_t *t, rbtNode_t *z);
  * @param z
 */
 void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z);
+
+/**
+ * @brief Ricerca del massimo 
+ * @param rbt puntatore a rbt
+ * @param node puntatore ad un nodo rbt
+ * @return nodoo con la chiave massima
+ */
+rbtNode_t *rbtMaximum(rbt_t *rbt, rbtNode_t *tnode);
+
+/**
+ * @brief Ricerca del minimo 
+ * @param rbt puntatore a rbt
+ * @param node puntatore ad un nodo rbt
+ * @return nodoo con la chiave minore
+ */
+rbtNode_t *rbtMinimum(rbt_t *rbt, rbtNode_t *tnode);
 
 /**
  * @brief Search recursively for a value in the RBT.
@@ -374,8 +390,12 @@ bool rbtCheckProp_5(rbt_t *rbt, rbtNode_t *tnode);
  * @brief Test RBT if it is correctly implemented.
  * @return True if it is correct; otherwise, false.
  */
-bool rbtTest() {
-    return;
-}
+bool rbtTest();
+
+/**
+ * @brief Test the HASHTABLE if is correctly implemented
+ * @return true if it is corret, false otherwise. 
+ */
+bool hashtableTest();
 
 //===================================================================//

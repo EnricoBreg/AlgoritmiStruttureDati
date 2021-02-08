@@ -327,6 +327,7 @@ int main(int argc, char **argv)
     printf("\nEliminazione dell'albero...\n");
     rbtFreeNodes(t, t->root);
     rbtFree(t);
+    free(num_arr);
 
     printf("\nBYE!\n\n");
     return 0;

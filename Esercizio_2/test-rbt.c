@@ -743,11 +743,10 @@ void rbtFree(rbt_t *rbt) {
 }
 
 bool rbtIsSorted(rbtTestStructure_t *teststr) {
-    unsigned int i = 0, j;
+    unsigned int i = 0;
 
     for(i = 0; i < teststr->index-1; i++) {
-        j = i++;
-        if (teststr->A[i] < teststr->A[j]) 
+        if (teststr->A[i] > teststr->A[i+1]) 
             return false;
     }
     return true;

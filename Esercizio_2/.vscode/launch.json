@@ -8,7 +8,7 @@
                         "name": "(gdb) Launch",
                         "type": "cppdbg",
                         "request": "launch",
-                        "program": "${workspaceFolder}/HashRBT-final-version",
+                        "program": "${workspaceFolder}/test-rbt",
                         "args": [],
                         "stopAtEntry": false,
                         "cwd": "${workspaceFolder}",

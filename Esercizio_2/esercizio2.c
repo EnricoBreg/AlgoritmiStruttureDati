@@ -4,18 +4,26 @@
 
 linkedListNode_t *createLinkedListNode(const int v)
 {
+    // Alloco la memoria neccessaria per il nodo
     linkedListNode_t *node = malloc(sizeof(linkedListNode_t));
+    // Inizializzaione del nodo
     node->next = NULL;
     node->prev = NULL;
+    // Chiave del nodo diventa il valore v
     node->value = v;
+    // Ritorno il nodo
     return node;
 }
 
 linkedList_t *createLinkedList(void)
 {
+    // Alloca la memoria per il puntatore all lista
     linkedList_t *list = malloc(sizeof(linkedList_t));
+    // Inilizzazione puntatore alla testa della lista
     list->head = NULL;
+    // Inilizzalizzazione dimensione della lista
     list->size = 0;
+    // Ritorno la lista
     return list;
 }
 
@@ -42,10 +50,11 @@ void linkedListInsert(linkedList_t *list, linkedListNode_t *x)
 
 linkedListNode_t *linkedListSearch(linkedList_t *list, const int v)
 {
+    // Faccio puntare x alla testa della lista
     linkedListNode_t *x = list->head;
+    // Scorro la lista finchè non arrivo alla fine
     while ((x != NULL) && (x->value != v))
     {
-        /* Scorro la lista */
         x = x->next;
     }
     return x;
@@ -53,7 +62,9 @@ linkedListNode_t *linkedListSearch(linkedList_t *list, const int v)
 
 void linkedListPrint(linkedList_t *list)
 {
-    linkedListNode_t *x = list->head;
+    // Faccio puntare x alla testa della lista
+    linkedListNode_t *x = list->head; 
+    // Scorro la lista finchè non arrivo alla fine
     while (x != NULL)
     {
         fprintf(stdout, "%d ", x->value);
@@ -108,6 +119,7 @@ void linkedListDelete(linkedList_t *list, linkedListNode_t *x)
 void linkedListFree(linkedList_t *list)
 {
     linkedListNode_t *temp;
+    // Scorro la lista
     while (list->head != NULL || list->size != 0)
     {
         /* salvo la testa della lista da eliminare */
@@ -196,11 +208,13 @@ void hashtableDelete(hashtable_t *hashtbl, linkedListNode_t *x)
 {
     unsigned int i;
 
-    /** Questa scelta è stata fatta in quanto la operazione di eliminazione
-         * viene verosimilmente collegata ad una operazione di ricerca.
-         * Se il nodo cercato non esiste, allora non ha senso eliminarlo.
-         * Se non fosse stata fatta tale scelta con molta probabilità si incorre
-         * in un Segmentation Fault. */
+    /**
+     * Questa scelta è stata fatta in quanto la operazione di eliminazione
+     * viene verosimilmente collegata ad una operazione di ricerca.
+     * Se il nodo cercato non esiste, allora non ha senso eliminarlo.
+     * Se non fosse stata fatta tale scelta con molta probabilità si incorre
+     * in un Segmentation Fault.
+     */
     if (x == NULL)
     {
         /** Il valore del linkedListNode_t x è NULL, cioè non esiste e
@@ -241,6 +255,9 @@ bool isHashTable(hashtable_t *hashtbl)
         htelist = tmptbl->entry[i]->list->head;
         while (htelist != NULL)
         {
+            /** Controllo che il valore ritornato dalla funzione di hash 
+             * sia corretto e che l'elemento si trovi nella entry corretta della hashtable 
+             */ 
             hashfvalue = hashFunction(tmptbl, htelist->value);
             if (hashfvalue != i)
             {
@@ -312,8 +329,8 @@ rbt_t *createRbt(void)
     t_nil->color = 'B';
     /** Inizializzazione della dimensione a 0 */
     new_rbt->size = 0;
-    new_rbt->nil = t_nil;
-    new_rbt->root = new_rbt->nil;
+    new_rbt->nil = t_nil; // il campo il deve puntare alla foglia nulla
+    new_rbt->root = new_rbt->nil; // all'inzio la radice dell'albero punta alla foglia virtuale
 
     /** return del nuovo albero creato */
     return new_rbt;
@@ -323,34 +340,39 @@ void rbtLeftRotate(rbt_t *t, rbtNode_t *x)
 {
     rbtNode_t *y;
 
-    /** y: figlio destro del nodo x*/
-    y = x->right;
-    /** figlio sx di y è il figlio sinistro di x */
-    x->right = y->left;
-
+    // -----------------------------------------------------+
+    //y: figlio destro del nodo x                         //|
+    y = x->right;                                         //| Differenza con la procedura speculare di
+    // figlio sx di y è il figlio sinistro di x           //|               rbtRightRotate
+    x->right = y->left;                                   //|
+    //------------------------------------------------------+
     if (y->left != t->nil)
     {
+        // il padre del figlio sinistro di y diventa x
         y->left->parent = x;
     }
 
+    // Il padre di y diventa il padre di x
     y->parent = x->parent;
 
     if (x->parent == t->nil)
     {
+        // Caso in cui l'albero è vuoto
         t->root = y;
     }
-    if ((x->parent != t->nil) && (x == x->parent->left))
+    if ((x->parent != t->nil) && (x == x->parent->left)) // x è figlio sinistro di suo padre
     {
-        x->parent->left = y;
+        x->parent->left = y; // y diventa figlio sinistro del padre di x
     }
-    if ((x->parent != t->nil) && (x == x->parent->right))
+    if ((x->parent != t->nil) && (x == x->parent->right)) // x è figlio destro di suo padre
     {
-        x->parent->right = y;
+        x->parent->right = y; // y diventa figlio destro del padre di x
     }
 
-    y->left = x;
-    x->parent = y;
+    y->left = x; // il figlio sinistro di y diventra x
+    x->parent = y; // Il nuovo padre di x è y
 
+    // Termino
     return;
 }
 
@@ -365,6 +387,7 @@ void rbtRightRotate(rbt_t *t, rbtNode_t *x)
 
     if (y->right != t->nil)
     {
+         // il padre del figlio destro di y diventa x
         y->right->parent = x;
     }
 
@@ -372,20 +395,22 @@ void rbtRightRotate(rbt_t *t, rbtNode_t *x)
 
     if (x->parent == t->nil)
     {
+        // Caso in cui l'albero è vuoto
         t->root = y;
     }
-    if ((x->parent != t->nil) && (x == x->parent->left))
+    if ((x->parent != t->nil) && (x == x->parent->left)) // x è figlio sinistro di suo padre
     {
-        x->parent->left = y;
+        x->parent->left = y; // y diventa figlio sinistro del padre di x
     }
-    if ((x->parent != t->nil) && (x == x->parent->right))
+    if ((x->parent != t->nil) && (x == x->parent->right)) // x è figlio destro di suo padre
     {
-        x->parent->right = y;
+        x->parent->right = y; // y diventa figlio destro del padre di x
     }
 
-    y->right = x;
-    x->parent = y;
-
+    y->right = x; // il figlio sinistro di y diventra x
+    x->parent = y; // Il nuovo padre di x è y
+    
+    // Termino
     return;
 }
 
@@ -442,6 +467,7 @@ void rbtInsert(rbt_t *t, rbtNode_t *z)
     /** Chiamo la procedura di fixup dell'albero */
     rbtInsertFixup(t, z);
 
+    // Termino
     return;
 }
 
@@ -473,7 +499,7 @@ void rbtInsertFixupLeft(rbt_t *t, rbtNode_t *z)
         /** Ricolorazione */
         z->parent->color = 'B';
         z->parent->parent->color = 'R';
-        /** Rotazione per bilanciare l'albero */
+        /** Rotazione destra per bilanciare l'albero */
         rbtRightRotate(t, z->parent->parent);
     }
 
@@ -508,7 +534,7 @@ void rbtInsertFixupRight(rbt_t *t, rbtNode_t *z)
         /** Ricolorazione */
         z->parent->color = 'B';
         z->parent->parent->color = 'R';
-        /** Rotazione per bilanciare l'albero */
+        /** Rotazione sinistra per bilanciare l'albero */
         rbtLeftRotate(t, z->parent->parent);
     }
 
@@ -559,16 +585,15 @@ rbtNode_t *rbtIterSearch(rbt_t *t, const int value)
     {
         return t->root;
     }
-
+    // Inizializzo il puntatore alla radice 
     aux = t->root;
-    /** Scorro l'albero */
+    // Scorro l'albero
     while (aux != t->nil)
     {
         if (value < aux->value)
-            /** Vado a sinistra */
-            aux = aux->left;
+            aux = aux->left; // Vado a sinistra
         else
-            aux = aux->right;
+            aux = aux->right; // Vado a destra
 
         if (aux->value == value)
             return aux;
@@ -623,24 +648,30 @@ bool rbtHasBstProperty(rbt_t *rbt)
     bool is_bst = false;
     rbtTestStructure_t *teststr = NULL;
 
+    /* Allocazione memoria necessaria */
     teststr = (rbtTestStructure_t *)malloc(sizeof(rbtTestStructure_t));
     teststr->A = (int *)malloc(sizeof(int) * rbt->size);
-    teststr->index = 0;
+    teststr->index = 0; // Inizializzazione indici a 0
 
+    // Chiamo la variante della visita inOrder
     rbtHasBstPropertyUtil(rbt, rbt->root, teststr);
 
+    // Controllo che l'array restituito dalla visita inOrder sia ordinato
     is_bst = rbtIsSorted(teststr);
 
     // Libero la memoria allocata
     free(teststr->A);
     free(teststr);
 
+    // Controllo il valore restituito da rbtIsSorted
     if (is_bst)
     {
+        // Caso array ordinato
         return true;
     }
     else
     {
+        // Caso array non ordinato
         return false;
     }
 }

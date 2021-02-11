@@ -711,11 +711,12 @@ void rbtFree(rbt_t *rbt)
 
 bool rbtIsSorted(rbtTestStructure_t *teststr)
 {
-    unsigned int i = 0;
+    unsigned int i = 0, j;
 
     for (i = 0; i < teststr->index - 1; i++)
     {
-        if (teststr->A[i] < teststr->A[i++])
+        j = i++; // Ho usato questa variabile per sopprimere un warning
+        if (teststr->A[i] < teststr->A[j])
             return false;
     }
     return true;
